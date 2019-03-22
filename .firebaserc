@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "Alarmify",
+    "alarmify": "alarmify-5f826"
+  }
+}
