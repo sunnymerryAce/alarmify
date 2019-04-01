@@ -1,5 +1,11 @@
+@import '~swiper/dist/css/swiper.min.css';
+
+.Playlists {
+  margin: 10vh 0px;
+}
 .playlist-item {
-  width: 100%;
+  width: 50%;
+  background: transparent;
 }
 .playlist-item img {
   width: 100%;

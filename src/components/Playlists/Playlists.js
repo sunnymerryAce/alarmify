@@ -1,3 +1,4 @@
+import Swiper from 'swiper';
 import React, { Component } from 'react';
 import './Playlists.css';
 
@@ -9,9 +10,27 @@ export default class Playlists extends Component {
       playlists: [],
     };
     this.play = this.play.bind(this);
-  }
-  componentDidMount() {
     this.fetchPlayLists();
+  }
+  componentDidUpdate() {
+    if (document.querySelector('.swiper-slide')) {
+      this.coverflow = new Swiper('.swiper-container', {
+        effect: 'coverflow',
+        grabCursor: true,
+        loop: true,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        coverflowEffect: {
+          rotate: 50,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        },
+        speed: 500,
+      });
+    }
+    console.log(document.querySelector('.swiper-slide'));
   }
 
   fetchPlayLists() {
@@ -28,7 +47,6 @@ export default class Playlists extends Component {
       })
       .then((json) => {
         console.log(json.items);
-
         this.setState({
           isPlaying: this.state.isPlaying,
           playlists: json.items,
@@ -51,13 +69,13 @@ export default class Playlists extends Component {
 
   render() {
     return (
-      <div className="Playlists">
-        <ul>
+      <div className="Playlists swiper-container">
+        <ul className="swiper-wrapper">
           {this.state.playlists.map((item, key) => {
             return (
               <li
                 key={key}
-                className="playlist-item"
+                className="playlist-item swiper-slide"
                 onClick={() => {
                   this.play(item.uri);
                 }}

@@ -7,7 +7,6 @@ import Login from './components/Login/Login';
 import Main from './components/Main/Main';
 
 class App extends Component {
-
   render() {
     return (
       <div className="App">
@@ -25,9 +24,6 @@ class App extends Component {
             <Route path="/login" component={Login} />
           </div>
         </Router>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-        </header>
       </div>
     );
   }
