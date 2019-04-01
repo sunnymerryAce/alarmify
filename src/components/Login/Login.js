@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import './Login.css';
 
-import { Link } from 'react-router-dom';
-
 export default class Login extends Component {
   constructor() {
     super();
@@ -14,7 +12,8 @@ export default class Login extends Component {
     const responseType = 'token';
     const state = 'sometext';
     const redirectUri = 'https://alarmify-5f826.firebaseapp.com/';
-    const scopes = 'user-read-private user-read-email';
+    const scopes =
+      'user-read-private user-read-playback-state user-modify-playback-state playlist-read-collaborative';
     const URL = `https://accounts.spotify.com/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scopes}`;
     return URL;
   }

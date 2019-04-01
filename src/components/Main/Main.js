@@ -2,26 +2,31 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import './Main.css';
 import { getHashObject } from '../../helper/util';
+import Controller from '../Controller/Controller';
+import Playlists from '../Playlists/Playlists';
 
 class Main extends Component {
   constructor(props) {
     super(props);
+    this.state = { userData: {} };
+
     if (window.location.hash) {
       const hashObject = getHashObject();
-      console.log(hashObject);
       const accessToken = hashObject.access_token;
-      console.log(accessToken);
       fetch('https://api.spotify.com/v1/me', {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
       })
         .then((response) => {
-          console.log(response.json());
           return response.json();
         })
-        .then((myJson) => {
-          console.log(JSON.stringify(myJson));
+        .then((json) => {
+          this.setState({
+            userData: json,
+            accessToken: accessToken,
+            isLoaded: true,
+          });
         });
     } else {
       this.props.history.push('/login');
@@ -31,7 +36,17 @@ class Main extends Component {
   render() {
     return (
       <div className="Main">
-        <p>Main page</p>
+        <p>Welcome, {this.state.userData.display_name}!</p>
+        <Controller
+          userData={this.state.userData}
+          accessToken={this.state.accessToken}
+        />
+        {this.state.isLoaded && (
+          <Playlists
+            userData={this.state.userData}
+            accessToken={this.state.accessToken}
+          />
+        )}
       </div>
     );
   }
