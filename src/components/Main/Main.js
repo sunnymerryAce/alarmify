@@ -19,7 +19,11 @@ class Main extends Component {
         },
       })
         .then((response) => {
-          return response.json();
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            throw new Error();
+          }
         })
         .then((json) => {
           this.setState({
@@ -27,10 +31,30 @@ class Main extends Component {
             accessToken: accessToken,
             isLoaded: true,
           });
+        })
+        .catch((error) => {
+          this.props.history.push('/login');
         });
     } else {
       this.props.history.push('/login');
     }
+  }
+
+  setScheduler() {
+    fetch(
+      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/scheduleAlarm',
+    )
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response);
+          return response.json();
+        } else {
+          throw new Error();
+        }
+      })
+      .then((json) => {
+        console.log(json);
+      });
   }
 
   render() {
@@ -41,6 +65,7 @@ class Main extends Component {
           userData={this.state.userData}
           accessToken={this.state.accessToken}
         />
+        <button onClick={this.setScheduler}>Set Cloud Scheduler</button>
         {this.state.isLoaded && (
           <Playlists
             userData={this.state.userData}

@@ -1,36 +1,48 @@
+const fetch = require('node-fetch');
 const functions = require('firebase-functions');
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
+exports.helloWorld = functions
+  .region('asia-northeast1')
+  .https.onRequest((request, response) => {
+    response.send('Hello from Firebase!');
+  });
 
-exports.fetchSpotify = (req, res) => {
-  const clientId = '8be6bb9bbc644e93ade9e6ba983fa7b2';
-  const clientSecret = '995b78a6b80c4b6c8bacb8443e24ceaf';
-  const redirectUri = 'https://alarmify-5f826.firebaseapp.com/';
-  const scopes = 'user-read-private user-read-email';
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  );
-  const https = require('https');
-  const URL = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}`;
+/**
+ * Triggered from a message on a Cloud Pub/Sub topic.
+ *
+ * @param {!Object} event Event payload.
+ * @param {!Object} context Metadata for the event.
+ */
+exports.playSpotify = functions
+  .region('asia-northeast1')
+  .pubsub.topic('spotify-cron')
+  .onPublish((message) => {
+    const pubsubMessage = message.data;
+    console.log('from local');
+    console.log(Buffer.from(pubsubMessage, 'base64').toString());
+  });
 
-  https
-    .get(URL, (getRes) => {
-      let body = '';
-      getRes.setEncoding('utf8');
-      getRes.on('data', (chunk) => {
-        body += chunk;
+exports.scheduleAlarm = functions
+  .region('asia-northeast1')
+  .https.onRequest((request, response) => {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
+    );
+    console.log('fetch start');
+    return fetch(
+      'https://cloudscheduler.googleapis.com/v1/projects/alarmify-5f826/locations/spotify-cron',
+    )
+      .then((res) => {
+        console.log(res);
+        response.send(res);
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      getRes.on('end', () => {
-        const responseJson = JSON.parse(body);
-        res.status(200).send(responseJson);
-      });
-    })
-    .on('error', (e) => {
-      console.error(e);
-      res.status(500).send(e);
-    });
-};
+  });
