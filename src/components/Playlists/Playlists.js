@@ -9,15 +9,14 @@ export default class Playlists extends Component {
       isPlaying: false,
       playlists: [],
     };
-    this.play = this.play.bind(this);
-    this.fetchPlayLists();
   }
-  componentDidUpdate() {
+  componentDidMount() {
     if (document.querySelector('.swiper-slide')) {
       this.coverflow = new Swiper('.swiper-container', {
+        init: false,
         effect: 'coverflow',
         grabCursor: true,
-        loop: true,
+        loop: false,
         centeredSlides: true,
         slidesPerView: 'auto',
         coverflowEffect: {
@@ -29,24 +28,24 @@ export default class Playlists extends Component {
         },
         speed: 500,
       });
+      this.coverflow.on('init', () => {
+        this.props.onChangePlaylist(this.coverflow.activeIndex);
+      });
+      this.coverflow.on('slideChange', () => {
+        this.props.onChangePlaylist(this.coverflow.activeIndex);
+      });
+      this.coverflow.init();
     }
-    console.log(document.querySelector('.swiper-slide'));
   }
 
   fetchPlayLists() {
     fetch(
-      `https://api.spotify.com/v1/users/${this.props.userData.id}/playlists`,
-      {
-        headers: {
-          Authorization: 'Bearer ' + this.props.accessToken,
-        },
-      },
+      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/getPlaylists',
     )
       .then((response) => {
         return response.json();
       })
       .then((json) => {
-        console.log(json.items);
         this.setState({
           isPlaying: this.state.isPlaying,
           playlists: json.items,
@@ -54,33 +53,13 @@ export default class Playlists extends Component {
       });
   }
 
-  play(uri) {
-    const bodyObject = {
-      context_uri: uri,
-    };
-    fetch('https://api.spotify.com/v1/me/player/play', {
-      method: 'PUT',
-      headers: {
-        Authorization: 'Bearer ' + this.props.accessToken,
-      },
-      body: JSON.stringify(bodyObject),
-    });
-  }
-
   render() {
     return (
       <div className="Playlists swiper-container">
         <ul className="swiper-wrapper">
-          {this.state.playlists.map((item, key) => {
+          {this.props.playlists.map((item, key) => {
             return (
-              <li
-                key={key}
-                className="playlist-item swiper-slide"
-                onClick={() => {
-                  this.play(item.uri);
-                }}
-              >
-                <p>{item.name}</p>
+              <li key={key} className="playlist-item swiper-slide">
                 <img src={item.images[0].url} alt="" />
               </li>
             );

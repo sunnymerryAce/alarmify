@@ -34,12 +34,23 @@ export default class Controller extends Component {
   }
 
   fetchPlay() {
-    fetch('https://api.spotify.com/v1/me/player/play', {
-      method: 'PUT',
-      headers: {
-        Authorization: 'Bearer ' + this.props.accessToken,
+    fetch(
+      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/playSpotifyByHand',
+      {
+        method: 'GET',
+        // headers: {
+        //   Authorization: 'Bearer ' + this.props.accessToken,
+        // },
       },
+    ).then((response) => {
+      console.log(response.data);
     });
+    // fetch('https://api.spotify.com/v1/me/player/play', {
+    //   method: 'PUT',
+    //   headers: {
+    //     Authorization: 'Bearer ' + this.props.accessToken,
+    //   },
+    // });
   }
 
   render() {

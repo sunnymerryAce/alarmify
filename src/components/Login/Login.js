@@ -4,12 +4,12 @@ import './Login.css';
 export default class Login extends Component {
   constructor() {
     super();
-    console.log('login');
   }
 
   redirectURL() {
     const clientId = '8be6bb9bbc644e93ade9e6ba983fa7b2';
-    const responseType = 'token';
+    // const responseType = 'token';
+    const responseType = 'code';
     const state = 'sometext';
     const redirectUri = 'https://alarmify-5f826.firebaseapp.com/';
     const scopes =

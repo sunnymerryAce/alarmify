@@ -9,6 +9,8 @@ const CONST = {
   TEST: {
     CLASS_NAME: 'class',
   },
+  // URI
+  REDIRECT_URI: 'https://alarmify-5f826.firebaseapp.com/',
 };
 
 export default CONST;

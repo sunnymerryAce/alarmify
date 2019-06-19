@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import 'modern-normalize/modern-normalize.css';
 import './App.css';
 
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
@@ -12,14 +12,6 @@ class App extends Component {
       <div className="App">
         <Router>
           <div>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/login">login</Link>
-              </li>
-            </ul>
             <Route exact path="/" component={Main} />
             <Route path="/login" component={Login} />
           </div>
