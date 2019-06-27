@@ -341,20 +341,22 @@ exports.scheduleAlarm2 = functions
     );
 
     const client = await google.auth.getClient({
-      scopes: [
-        'https://www.googleapis.com/auth/datastore',
-        'https://www.googleapis.com/auth/cloud-platform',
-      ],
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
+    console.log(client);
     const projectId = 'alarmify-5f826';
     const location = 'us-central1';
     const job = 'spotify-cron';
 
     const requestForCloudScheduler = {
-      parent: `projects/${projectId}/locations/${location}/jobs/${job}`,
+      name: `projects/${projectId}/locations/${location}/jobs/${job}`,
+      updateMask: 'schedule',
       resource: {
         // 分 時 日 月 曜日
-        schedule: `5 7 * * 1-5`,
+        schedule: '10 7 * * 1-5',
+        pubsubTarget: {
+          topicName: `projects/${projectId}/topics/${job}`,
+        },
       },
       auth: client,
     };
@@ -367,6 +369,51 @@ exports.scheduleAlarm2 = functions
           return;
         }
         console.log(JSON.stringify(response, null, 2));
+      },
+    );
+  });
+
+exports.createScheduler = functions
+  .region('asia-northeast1')
+  .https.onRequest(async (request, response) => {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
+    );
+
+    const client = await google.auth.getClient({
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+    const projectId = 'alarmify-5f826';
+    const location = 'us-central1';
+    const job = 'scheduleTest';
+    const topic = 'cron-test';
+
+    const payLoad = Buffer.from('scheduleTest triggered!').toString('base64');
+
+    const requestForCloudScheduler = {
+      parent: `projects/${projectId}/locations/${location}`,
+      resource: {
+        name: `projects/${projectId}/locations/${location}/jobs/${job}`,
+        // 分 時 日 月 曜日
+        schedule: '0 7 * * 1-5',
+        pubsubTarget: {
+          topicName: `projects/${projectId}/topics/${topic}`,
+          data: payLoad,
+        },
+      },
+      auth: client,
+    };
+
+    cloudScheduler.projects.locations.jobs.create(
+      requestForCloudScheduler,
+      (err, response) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log(response.data);
       },
     );
   });
