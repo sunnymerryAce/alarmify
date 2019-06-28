@@ -5,8 +5,14 @@ const rp = require('request-promise');
 const querystring = require('querystring');
 
 const cloudScheduler = google.cloudscheduler('v1beta1');
+const firestore = google.firestore('v1beta1');
+
+const SPOTIFY_CLIENT_ID = '8be6bb9bbc644e93ade9e6ba983fa7b2';
+const SPOTIFY_CLIENT_SECRET = '995b78a6b80c4b6c8bacb8443e24ceaf';
 
 const projectId = 'alarmify-5f826';
+const databaseId = '(default)';
+// TODO: ユーザーの新規登録を可能にする
 const userName = 'test';
 const REDIRECT_URI = 'https://alarmify-5f826.firebaseapp.com/';
 
@@ -34,6 +40,21 @@ const getGCPAccessToken = async () => {
   } catch (err) {
     return err;
   }
+};
+
+/**
+ * GCPのOAuth認証を行い、クライアント認証情報を取得する
+ * @returns {OAuth2Client} client
+ */
+const getGCPAuthorizedClient = async () => {
+  const scopes = [
+    'https://www.googleapis.com/auth/datastore',
+    'https://www.googleapis.com/auth/cloud-platform',
+  ];
+  client = await google.auth.getClient({
+    scopes,
+  });
+  return client;
 };
 
 const getSpotifyAccessToken = async (user, isRefresh) => {
@@ -67,32 +88,59 @@ const getSpotifyAccessToken = async (user, isRefresh) => {
 
 /**
  * Firestoreからユーザ情報を取得する
- * @param {string} accessToken
+ * @param {string} client
  * @returns {object} fields of user
  */
-const getUser = async (accessToken) => {
-  const endpoint = `https://firestore.googleapis.com/v1beta1/projects/${projectId}/databases/(default)/documents/users/${userName}`;
-  const option = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
-  try {
-    const res = await rp.get(endpoint, option);
-    console.log(`firestoreユーザ情報取得成功`);
-    const fields = JSON.parse(res).fields;
-    const user = {
-      access_token: fields.access_token.stringValue,
-      refresh_token: fields.refresh_token.stringValue,
-      clientId: fields.clientId.stringValue,
-      clientSecret: fields.clientSecret.stringValue,
-      playlistUri: fields.playlistUri.stringValue,
+const getUser = async (client) => {
+  const getFirestoreDocument = () => {
+    const documentPath = `users/${userName}`;
+    const params = {
+      auth: client,
+      name: `projects/${projectId}/databases/${databaseId}/documents/${documentPath}`,
     };
-    return user;
-  } catch (err) {
-    console.log(`error occurred  ${err}`);
-    return err;
-  }
+    return new Promise((resolve, reject) => {
+      firestore.projects.databases.documents.get(params, (err, response) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const user = {
+            access_token: response.data.fields.access_token.stringValue,
+            refresh_token: response.data.fields.refresh_token.stringValue,
+            clientId: response.data.fields.clientId.stringValue,
+            clientSecret: response.data.fields.clientSecret.stringValue,
+            playlistUri: response.data.fields.playlistUri.stringValue,
+          };
+          resolve(user);
+        }
+      });
+    });
+  };
+  const user = await getFirestoreDocument();
+  return user;
+
+  // const endpoint = `https://firestore.googleapis.com/v1beta1/projects/${projectId}/databases/(default)/documents/users/${userName}`;
+  // const option = {
+  //   headers: {
+  //     Authorization: `Bearer ${accessToken}`,
+  //   },
+  // };
+  // try {
+  //   const res = await rp.get(endpoint, option);
+  //   console.log(`firestoreユーザ情報取得成功`);
+  //   const fields = JSON.parse(res).fields;
+  //   const user = {
+  //     access_token: fields.access_token.stringValue,
+  //     refresh_token: fields.refresh_token.stringValue,
+  //     clientId: fields.clientId.stringValue,
+  //     clientSecret: fields.clientSecret.stringValue,
+  //     playlistUri: fields.playlistUri.stringValue,
+  //   };
+  //   return user;
+  // } catch (err) {
+  //   console.log(`error occurred  ${err}`);
+  //   return err;
+  // }
 };
 
 /**
@@ -165,8 +213,12 @@ exports.getPlaylists = functions
     let res = null;
     try {
       // 1. 既存AccessTokenをFirestoreから取得
-      const gcpAccessToken = await getGCPAccessToken();
-      const user = await getUser(gcpAccessToken);
+      // const gcpAccessToken = await getGCPAccessToken();
+      // 1. TEST OAuthでOAuth2Clientを取得
+      const client = await getGCPAuthorizedClient();
+      // const user = await getUser(gcpAccessToken);
+      const user = await getUser(client);
+      console.log(user);
       // 2. 既存AccessTokenでトライ
       res = await getList(user.access_token);
       // AccessTokenがexpiredの場合
@@ -184,7 +236,7 @@ exports.getPlaylists = functions
         res = await getList(newSpotifyAccessToken.access_token);
       }
     } catch (error) {
-      console.log(`error occurred  ${err}`);
+      console.log(`error occurred  ${error}`);
     }
     response.send(res);
 
@@ -382,9 +434,7 @@ exports.createScheduler = functions
       'Origin, X-Requested-With, Content-Type, Accept',
     );
 
-    const client = await google.auth.getClient({
-      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    });
+    const client = getGCPAuthorizedClient();
     const projectId = 'alarmify-5f826';
     const location = 'us-central1';
     const job = 'scheduleTest';
