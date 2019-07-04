@@ -1,9 +1,9 @@
 const rp = require('request-promise');
-const querystring = require('querystring');
+const fetch = require('node-fetch');
+const { URLSearchParams } = require('url');
 const { google } = require('googleapis');
 const cloudScheduler = google.cloudscheduler('v1beta1');
 const firestore = google.firestore('v1beta1');
-
 const { CONFIG } = require('./CONFIG');
 const projectId = CONFIG.PROJECT_ID;
 const databaseId = CONFIG.DATABASE_ID;
@@ -12,6 +12,66 @@ const jobName = CONFIG.JOB_NAME;
 // TODO: ユーザーの新規登録を可能にする
 const userName = CONFIG.USER_NAME;
 const redirectUri = CONFIG.REDIRECT_URI;
+
+/**
+ * Create URLSearchParams Instance from Object
+ * @param {Object} params
+ * @returns {URLSearchParams}
+ */
+const getURLSearchParams = (params) => {
+  const urlSearchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    urlSearchParams.append(key, value);
+  });
+  return urlSearchParams;
+};
+
+/**
+ * Fetch HTTP request with handling server errors
+ * @param {Object} params
+ * @param {string} param.url
+ * @param {Object} param.options
+ * @returns {Object}
+ * @throws {Error}
+ */
+const fetchWithErrorHandling = ({ url, options }) => {
+  const handleErrors = (res) => {
+    if (res.ok) {
+      return res;
+    }
+    switch (res.status) {
+      case 400:
+        throw new Error(CONFIG.ERROR[400]);
+      case 401:
+        throw new Error(CONFIG.ERROR[401]);
+      case 403:
+        throw new Error(CONFIG.ERROR[403]);
+      case 404:
+        throw new Error(CONFIG.ERROR[404]);
+      case 500:
+        throw new Error(CONFIG.ERROR[500]);
+      case 502:
+        throw new Error(CONFIG.ERROR[502]);
+      default:
+        throw new Error(CONFIG.ERROR.default);
+    }
+  };
+  // fetchの結果を非同期で返す
+  return (
+    fetch(url, options)
+      // サーバサイドで発行されたエラーステータスを処理する
+      .then(handleErrors)
+      // 正常なレスポンスからJSONオブジェクトをパースする
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      })
+      // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
+      .catch((err) => {
+        throw new Error(err);
+      })
+  );
+};
 
 /**
  * GCPのOAuth認証を行い、クライアント認証情報を取得する
@@ -119,27 +179,24 @@ const getSpotifyAccessToken = async (user, isRefresh) => {
   const secretKey = `${CONFIG.SPOTIFY_CLIENT_ID}:${
     CONFIG.SPOTIFY_CLIENT_SECRET
   }`;
-  const buffer = new Buffer(secretKey);
+  const buffer = Buffer.from(secretKey);
   const base64 = buffer.toString('base64');
-  const params = querystring.stringify({
-    grant_type: isRefresh ? 'refresh_token' : 'authorization_code',
-    code: user.code,
-    refresh_token: user.refresh_token,
-    redirect_uri: redirectUri,
-  });
-  const options = {
+  const params = {
     method: 'POST',
-    uri: 'https://accounts.spotify.com/api/token',
     headers: {
-      'content-type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: `Basic ${base64}`,
     },
-    body: params,
+    body: getURLSearchParams({
+      grant_type: isRefresh ? 'refresh_token' : 'authorization_code',
+      code: user.code,
+      refresh_token: user.refresh_token,
+      redirect_uri: redirectUri,
+    }),
   };
   try {
-    const res = await rp(options);
-    console.log(' SpotifyのAccessToken再度取得成功');
-    return JSON.parse(res);
+    const response = await fetch(CONFIG.SPOTIFY_API.GET_TOKEN, params);
+    return await response.json();
   } catch (err) {
     console.log(`error occurred  ${err}`);
     return err;
@@ -147,37 +204,31 @@ const getSpotifyAccessToken = async (user, isRefresh) => {
 };
 
 /**
- * ユーザのプレイリスト一覧を取得する(Spotify APIリクエスト)
+ * ユーザのプレイリスト一覧を取得する(SpotifyAPIリクエスト)
  * @param {String} accessToken
- * @returns {Array} playlists
+ * @returns {Object}
+ * @throws {Error}
  */
-const getPlaylists = async (accessToken) => {
+const getUserPlaylists = async (accessToken) => {
   const options = {
     method: 'GET',
-    uri: 'https://api.spotify.com/v1/me',
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   };
-  try {
-    const res = await rp(options);
-    const info = JSON.parse(res);
-    // プレイリストを取得
-    const listOptions = {
-      method: 'GET',
-      uri: `https://api.spotify.com/v1/users/${info.id}/playlists`,
-      qs: {
-        limit: 50,
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-    return await rp(listOptions);
-  } catch (err) {
-    console.log(`error occurred  ${err}`);
-    return err;
-  }
+  // Spotifyユーザ情報を取得
+  const userInfo = await fetchWithErrorHandling({
+    url: CONFIG.SPOTIFY_API.GET_USER_INFO,
+    options,
+  });
+
+  // プレイリストを取得
+  const query = getURLSearchParams({ limit: 50 });
+  const url = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
+    userInfo.id,
+  )}?${query.toString()}`;
+  playlistInfo = await fetchWithErrorHandling({ url, options });
+  return playlistInfo;
 };
 
 /**
@@ -245,6 +296,6 @@ module.exports.getGCPAuthorizedClient = getGCPAuthorizedClient;
 module.exports.getUser = getUser;
 module.exports.updateUser = updateUser;
 module.exports.getSpotifyAccessToken = getSpotifyAccessToken;
-module.exports.getPlaylists = getPlaylists;
+module.exports.getUserPlaylists = getUserPlaylists;
 module.exports.setScheduler = setScheduler;
 module.exports.playSpotify = playSpotify;

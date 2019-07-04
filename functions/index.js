@@ -6,7 +6,7 @@ const {
   getUser,
   updateUser,
   getSpotifyAccessToken,
-  getPlaylists,
+  getUserPlaylists,
   setScheduler,
   playSpotify,
 } = require('./common/common');
@@ -19,15 +19,15 @@ exports.getPlaylists = functions
   .https.onRequest((request, response) => {
     cors(request, response, async () => {
       let res = null;
-      try {
-        // 1. OAuthでOAuth2Clientを取得
-        const client = await getGCPAuthorizedClient();
-        // 2.ユーザ情報取得 from Firestore
-        const user = await getUser(client);
-        // 3. 既存AccessTokenでトライ
-        res = await getPlaylists(user.access_token);
+      // 1. OAuthでOAuth2Clientを取得
+      const client = await getGCPAuthorizedClient();
+      // 2.ユーザ情報取得 from Firestore
+      const user = await getUser(client);
+      // 3. 既存AccessTokenでトライ
+      res = await getUserPlaylists(user.access_token).catch(async (err) => {
         // AccessTokenがexpiredの場合
-        if (res.statusCode === 401) {
+        const regExp = new RegExp(CONFIG.ERROR[401]);
+        if (err.message && regExp.test(err.message)) {
           // 4. 新しいSpotifyのAccessToken取得
           const newSpotifyAccessToken = await getSpotifyAccessToken(user, true);
           // 5. Firestoreに値を保存
@@ -38,11 +38,9 @@ exports.getPlaylists = functions
             refresh_token: newSpotifyAccessToken.refresh_token,
           });
           // 6. 再トライ
-          res = await getPlaylists(newSpotifyAccessToken.access_token);
+          return await getUserPlaylists(newSpotifyAccessToken.access_token);
         }
-      } catch (error) {
-        console.log(`error occurred  ${error}`);
-      }
+      });
       response.send(res);
     });
   });
@@ -93,7 +91,7 @@ exports.playSpotify = functions
       // 3. 再生を試す
       res = await playSpotify(user.access_token, user.playlistUri);
       // AccessTokenがexpiredの場合
-      if (res.statusCode === 401) {
+      if (res.status === 401) {
         // 4. 新しいSpotifyのAccessToken取得
         const newSpotifyAccessToken = await getSpotifyAccessToken(user, true);
         // 5. Firestoreに値を保存
