@@ -24,7 +24,7 @@ exports.getPlaylists = functions
       // 2.ユーザ情報取得 from Firestore
       const user = await getUser(client);
       // 3. 既存AccessTokenでトライ
-      res = await getUserPlaylists(user.access_token).catch(async (err) => {
+      res = await getUserPlaylists(user.access_token).catch(async err => {
         // AccessTokenがexpiredの場合
         const regExp = new RegExp(CONFIG.ERROR[401]);
         if (err.message && regExp.test(err.message)) {
@@ -44,6 +44,14 @@ exports.getPlaylists = functions
       response.send(res);
     });
   });
+
+exports.getPlaylistsByCall = functions.https.onCall((data, context) => {
+  console.log(data);
+  console.log(context);
+  return {
+    text: 'OK',
+  };
+});
 
 /**
  * アラームを設定する
@@ -81,7 +89,7 @@ exports.scheduleAlarm = functions
 exports.playSpotify = functions
   .region('asia-northeast1')
   .pubsub.topic(CONFIG.JOB_NAME)
-  .onPublish(async (message) => {
+  .onPublish(async message => {
     let res = null;
     try {
       // 1. OAuthでOAuth2Clientを取得

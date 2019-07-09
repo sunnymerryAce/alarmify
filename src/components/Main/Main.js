@@ -1,3 +1,6 @@
+import firebase from 'firebase';
+import 'firebase/functions';
+
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import './Main.css';
@@ -62,7 +65,7 @@ class Main extends Component {
       },
       body: JSON.stringify(data),
     })
-      .then((response) => {
+      .then(response => {
         this.setState({
           isFetching: false,
         });
@@ -72,7 +75,7 @@ class Main extends Component {
           throw new Error();
         }
       })
-      .catch((error) => {
+      .catch(error => {
         this.setState({
           isFetching: false,
         });
@@ -81,13 +84,21 @@ class Main extends Component {
   }
 
   fetchPlayLists() {
+    const getPlaylistsByCall = firebase
+      .functions()
+      .httpsCallable('getPlaylistsByCall');
+    getPlaylistsByCall({ text: 'oncall!!' }).then(result => {
+      const sanitizedMessage = result.data.text;
+      console.log(sanitizedMessage);
+    });
+
     fetch(
       'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/getPlaylists',
     )
-      .then((response) => {
+      .then(response => {
         return response.json();
       })
-      .then((json) => {
+      .then(json => {
         this.setState({
           playlists: json.items,
           isLoaded: true,
