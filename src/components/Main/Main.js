@@ -46,7 +46,7 @@ class Main extends Component {
     });
   }
 
-  setScheduler() {
+  async setScheduler() {
     this.setState({
       isFetching: true,
     });
@@ -55,55 +55,20 @@ class Main extends Component {
       minute: this.state.minute,
       playlistUri: this.state.playlistUri,
     };
-
-    const URI_scheduleAlarm =
-      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/scheduleAlarm';
-    fetch(URI_scheduleAlarm, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify(data),
-    })
-      .then(response => {
-        this.setState({
-          isFetching: false,
-        });
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          throw new Error();
-        }
-      })
-      .catch(error => {
-        this.setState({
-          isFetching: false,
-        });
-        console.log(error);
-      });
+    const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
+    const result = await scheduleAlarm(data).catch(error => false);
+    this.setState({
+      isFetching: result,
+    });
   }
 
-  fetchPlayLists() {
-    const getPlaylistsByCall = firebase
-      .functions()
-      .httpsCallable('getPlaylistsByCall');
-    getPlaylistsByCall({ text: 'oncall!!' }).then(result => {
-      const sanitizedMessage = result.data.text;
-      console.log(sanitizedMessage);
+  async fetchPlayLists() {
+    const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
+    const result = await getPlaylists();
+    this.setState({
+      playlists: result.data.items,
+      isLoaded: true,
     });
-
-    fetch(
-      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/getPlaylists',
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        this.setState({
-          playlists: json.items,
-          isLoaded: true,
-        });
-      });
   }
 
   render() {
