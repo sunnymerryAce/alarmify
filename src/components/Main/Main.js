@@ -57,8 +57,11 @@ class Main extends Component {
     };
     const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
     const result = await scheduleAlarm(data).catch(error => false);
+    if (result) {
+      console.log(result.data);
+    }
     this.setState({
-      isFetching: result,
+      isFetching: false,
     });
   }
 

@@ -19,6 +19,7 @@ exports.getPlaylists = functions.https.onCall(async (data, context) => {
   const client = await getGCPAuthorizedClient();
   // 2.ユーザ情報取得 from Firestore
   const user = await getUser(client);
+  console.log(user);
   // 3. 既存AccessTokenでトライ
   res = await getUserPlaylists(user.access_token).catch(async err => {
     // AccessTokenがexpiredの場合
@@ -55,12 +56,11 @@ exports.scheduleAlarm = functions.https.onCall(async (data, context) => {
       playlistUri: data.playlistUri,
     });
     // 4. cronジョブを設定
-    await setScheduler({
+    return await setScheduler({
       client,
       hour: data.hour,
       minute: data.minute,
     });
-    return true;
   } catch (error) {
     console.log(`error occurred  ${error}`);
   }

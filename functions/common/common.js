@@ -18,7 +18,7 @@ const redirectUri = CONFIG.REDIRECT_URI;
  * @param {Object} params
  * @returns {URLSearchParams}
  */
-const getURLSearchParams = (params) => {
+const getURLSearchParams = params => {
   const urlSearchParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     urlSearchParams.append(key, value);
@@ -35,7 +35,7 @@ const getURLSearchParams = (params) => {
  * @throws {Error}
  */
 const fetchWithErrorHandling = ({ url, options }) => {
-  const handleErrors = (res) => {
+  const handleErrors = res => {
     if (res.ok) {
       return res;
     }
@@ -62,12 +62,12 @@ const fetchWithErrorHandling = ({ url, options }) => {
       // サーバサイドで発行されたエラーステータスを処理する
       .then(handleErrors)
       // 正常なレスポンスからJSONオブジェクトをパースする
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         return data;
       })
       // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
-      .catch((err) => {
+      .catch(err => {
         throw new Error(err);
       })
   );
@@ -93,7 +93,7 @@ const getGCPAuthorizedClient = async () => {
  * @param {OAuth2Client} client
  * @returns {Object} user information
  */
-const getUser = (client) => {
+const getUser = client => {
   const documentPath = `users/${userName}`;
   const params = {
     auth: client,
@@ -209,7 +209,7 @@ const getSpotifyAccessToken = async (user, isRefresh) => {
  * @returns {Object}
  * @throws {Error}
  */
-const getUserPlaylists = async (accessToken) => {
+const getUserPlaylists = async accessToken => {
   const options = {
     method: 'GET',
     headers: {
@@ -223,7 +223,7 @@ const getUserPlaylists = async (accessToken) => {
   });
 
   // プレイリストを取得
-  const query = getURLSearchParams({ limit: 50 });
+  const query = getURLSearchParams({ limit: 22 });
   const url = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
   )}?${query.toString()}`;
