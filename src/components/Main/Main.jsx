@@ -77,6 +77,7 @@ class Main extends Component {
   render() {
     return (
       <div className="Main">
+        <i className="far fa-check-circle" />
         <Timer
           onChangeHour={this.onChangeHour.bind(this)}
           onChangeMinute={this.onChangeMinute.bind(this)}
