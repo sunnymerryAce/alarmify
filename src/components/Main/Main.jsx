@@ -1,9 +1,12 @@
+import anime from 'animejs';
 import firebase from 'firebase';
 import 'firebase/functions';
 
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import './Main.css';
+import './Main.scss';
+import check from '../../images/baseline-check_circle_outline-24px.svg'; // Tell Webpack this JS file uses this image
+
 import Timer from './Timer/Timer';
 import Playlists from '../Playlists/Playlists';
 
@@ -16,9 +19,11 @@ class Main extends Component {
       minute: '0',
       playlistUri: '',
       title: '',
-      isLoaded: false,
+      isLoading: true,
       isFetching: false,
     };
+    this.$loader = React.createRef();
+    this.$complete = React.createRef();
     if (window.location.search) {
       // プレイリスト一覧を取得
       this.fetchPlayLists();
@@ -56,13 +61,8 @@ class Main extends Component {
       playlistUri: this.state.playlistUri,
     };
     const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
-    const result = await scheduleAlarm(data).catch(error => false);
-    if (result) {
-      console.log(result.data);
-    }
-    this.setState({
-      isFetching: false,
-    });
+    await scheduleAlarm(data).catch(error => false);
+    this.showComplete();
   }
 
   async fetchPlayLists() {
@@ -70,20 +70,61 @@ class Main extends Component {
     const result = await getPlaylists();
     this.setState({
       playlists: result.data.items,
-      isLoaded: true,
+      isLoading: false,
+    });
+  }
+
+  showComplete() {
+    const timeline = anime.timeline();
+    // ローディング消す
+    timeline.add({
+      targets: [this.$loader.current],
+      scale: {
+        value: [1, 0],
+        duration: 200,
+        easing: 'easeOutQuart',
+      },
+      complete: () => {
+        this.$complete.current.style.display = 'block';
+      },
+    });
+    // チェックマーク出す
+    timeline.add({
+      targets: [this.$complete.current],
+      scale: {
+        value: [0, 1],
+        duration: 300,
+        easing: 'cubicBezier(.3,1.04,.86,1.47)',
+      },
+    });
+    // チェックマーク消す
+    timeline.add({
+      targets: [this.$complete.current],
+      scale: {
+        value: [1, 0],
+        duration: 200,
+        delay: 500,
+        easing: 'easeOutQuart',
+      },
+      complete: () => {
+        this.$loader.current.style.transform = '';
+        this.$complete.current.style.display = 'none';
+        this.setState({
+          isFetching: false,
+        });
+      },
     });
   }
 
   render() {
     return (
       <div className="Main">
-        <i className="far fa-check-circle" />
         <Timer
           onChangeHour={this.onChangeHour.bind(this)}
           onChangeMinute={this.onChangeMinute.bind(this)}
         />
         <div className="title">{this.state.title}</div>
-        {this.state.isLoaded && (
+        {!this.state.isLoading && (
           <Playlists
             playlists={this.state.playlists}
             onChangePlaylist={this.onChangePlaylist.bind(this)}
@@ -93,11 +134,15 @@ class Main extends Component {
         <div className="button-set" onClick={this.setScheduler.bind(this)}>
           SET ALARM
         </div>
-        {this.state.isFetching && (
-          <div className="Loading">
-            <div className="loader" />
+        <div
+          className="Loading"
+          style={{ display: this.state.isFetching ? 'block' : 'none' }}
+        >
+          <div className="loader" ref={this.$loader} />
+          <div className="complete" ref={this.$complete}>
+            <img src={check} alt="check" />
           </div>
-        )}
+        </div>
       </div>
     );
   }

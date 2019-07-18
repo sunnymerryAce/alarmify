@@ -11,9 +11,6 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Helmet>
-          <script src="https://kit.fontawesome.com/15617751db.js" />
-        </Helmet>
         <Router>
           <div>
             <Route exact path="/" component={Main} />
