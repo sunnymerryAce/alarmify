@@ -223,7 +223,7 @@ const getUserPlaylists = async accessToken => {
   });
 
   // プレイリストを取得
-  const query = getURLSearchParams({ limit: 22 });
+  const query = getURLSearchParams({ limit: 50 });
   const url = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
   )}?${query.toString()}`;
