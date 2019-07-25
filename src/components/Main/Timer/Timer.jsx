@@ -1,14 +1,39 @@
 import React, { Component } from 'react';
-import './Timer.css';
-
+import './Timer.scss';
+import DateFnsUtils from '@date-io/date-fns'; // choose your lib
+import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { createMuiTheme } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
+import lime from '@material-ui/core/colors/lime';
 export default class Timer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selectedDate: new Date(),
+    };
+    this.defaultMaterialTheme = createMuiTheme({
+      palette: {
+        primary: {
+          main: '#1db954',
+        },
+      },
+    });
+  }
+  handleDateChange(date) {
+    this.setState({ selectedDate: date });
   }
 
   render() {
     return (
       <div className="Timer">
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <ThemeProvider theme={this.defaultMaterialTheme}>
+            <TimePicker
+              value={this.state.selectedDate}
+              onChange={e => this.setState({ selectedDate: e })}
+            />
+          </ThemeProvider>
+        </MuiPickersUtilsProvider>
         <select name="" id="hour" onChange={this.props.onChangeHour}>
           <option value="0">0</option>
           <option value="1">1</option>
