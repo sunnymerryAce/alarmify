@@ -10,6 +10,7 @@ import check from '../../images/baseline-check_circle_outline-24px.svg'; // Tell
 
 import Timer from './Timer/Timer';
 import Playlists from '../Playlists/Playlists';
+import { getQueryObject } from '../../helper/util.js';
 
 class Main extends Component {
   constructor(props) {
@@ -30,13 +31,28 @@ class Main extends Component {
   }
 
   async initialize() {
-    if (window.location.search) {
-      // プレイリスト一覧を取得
+    // Firestoreの情報を参照
+    const getFirestoreUser = firebase
+      .functions()
+      .httpsCallable('getFirestoreUser');
+    const { data } = await getFirestoreUser();
+    // Firestoreに登録済みの場合
+    if (data) {
+      // プレイリスト一覧を表示
       this.setState({
-        playlists: await this.fetchPlayLists(),
+        playlists: await this.fetchPlayLists({ user: data }),
+        isLoading: false,
+      });
+      // Firestoreに未登録の場合
+    } else if (window.location.search) {
+      // パラメータのauthorization-codeでプレイリスト一覧を表示
+      const { code } = getQueryObject();
+      this.setState({
+        playlists: await this.fetchPlayLists({ code }),
         isLoading: false,
       });
     } else {
+      // ログイン画面表示
       this.props.history.push('/login');
     }
   }
@@ -46,7 +62,6 @@ class Main extends Component {
   }
 
   onChangeMinute(minute) {
-    console.log(minute);
     this.setState({ minute: minute });
   }
 
@@ -75,9 +90,9 @@ class Main extends Component {
     this.showComplete();
   }
 
-  async fetchPlayLists() {
+  async fetchPlayLists({ user = null, code = '' }) {
     const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
-    const result = await getPlaylists();
+    const result = await getPlaylists({ user, code });
     return result.data.items
       ? orderBy(result.data.items, ['name'], ['asc'])
       : [];

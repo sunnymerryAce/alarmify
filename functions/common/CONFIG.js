@@ -15,12 +15,12 @@ const CONFIG = {
   DATABASE_ID: '(default)',
   LOCATION_ID: 'us-central1',
   JOB_NAME: 'spotify-cron',
-  USER_NAME: 'test',
+  USER_NAME: 'user',
   REDIRECT_URI: 'https://alarmify-5f826.firebaseapp.com/',
   SPOTIFY_API: {
     GET_TOKEN: 'https://accounts.spotify.com/api/token',
     GET_USER_INFO: 'https://api.spotify.com/v1/me',
-    GET_PLAYLIST: (useId) =>
+    GET_PLAYLIST: useId =>
       `https://api.spotify.com/v1/users/${useId}/playlists`,
   },
 };

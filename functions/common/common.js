@@ -9,7 +9,6 @@ const projectId = CONFIG.PROJECT_ID;
 const databaseId = CONFIG.DATABASE_ID;
 const locationId = CONFIG.LOCATION_ID;
 const jobName = CONFIG.JOB_NAME;
-// TODO: ユーザーの新規登録を可能にする
 const userName = CONFIG.USER_NAME;
 const redirectUri = CONFIG.REDIRECT_URI;
 
@@ -149,9 +148,6 @@ const updateUser = ({
             ? `${refresh_token}`
             : `${user.refresh_token}`,
         },
-        code: {
-          stringValue: `${user.code}`,
-        },
         playlistUri: {
           stringValue: playlistUri ? `${playlistUri}` : `${user.playlistUri}`,
         },
@@ -189,9 +185,9 @@ const getSpotifyAccessToken = async (user, isRefresh) => {
     },
     body: getURLSearchParams({
       grant_type: isRefresh ? 'refresh_token' : 'authorization_code',
-      code: user.code,
-      refresh_token: user.refresh_token,
-      redirect_uri: redirectUri,
+      code: isRefresh ? '' : user.code,
+      redirect_uri: isRefresh ? '' : redirectUri,
+      refresh_token: isRefresh ? user.refresh_token : '',
     }),
   };
   try {
@@ -240,7 +236,6 @@ const getUserPlaylists = async accessToken => {
  */
 const setScheduler = ({ client, hour, minute }) => {
   const schedule = `${minute} ${hour} * * *`;
-  console.log(`projects/${projectId}/topics/${jobName}`);
   const params = {
     name: `projects/${projectId}/locations/${locationId}/jobs/${jobName}`,
     updateMask: 'schedule',
@@ -253,7 +248,6 @@ const setScheduler = ({ client, hour, minute }) => {
     auth: client,
   };
   return new Promise((resolve, reject) => {
-    // TODO: 初回はジョブ作成にする
     cloudScheduler.projects.locations.jobs.patch(params, (err, response) => {
       if (err) {
         console.error(err);
