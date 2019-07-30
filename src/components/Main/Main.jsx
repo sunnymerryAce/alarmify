@@ -1,6 +1,7 @@
 import anime from 'animejs';
 import firebase from 'firebase';
 import 'firebase/functions';
+import { orderBy } from 'lodash-es';
 
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
@@ -24,20 +25,29 @@ class Main extends Component {
     };
     this.$loader = React.createRef();
     this.$complete = React.createRef();
+
+    this.initialize();
+  }
+
+  async initialize() {
     if (window.location.search) {
       // プレイリスト一覧を取得
-      this.fetchPlayLists();
+      this.setState({
+        playlists: await this.fetchPlayLists(),
+        isLoading: false,
+      });
     } else {
       this.props.history.push('/login');
     }
   }
 
-  onChangeHour(e) {
-    this.setState({ hour: e.target.value });
+  onChangeHour(hour) {
+    this.setState({ hour: hour });
   }
 
-  onChangeMinute(e) {
-    this.setState({ minute: e.target.value });
+  onChangeMinute(minute) {
+    console.log(minute);
+    this.setState({ minute: minute });
   }
 
   onChangePlaylist(index) {
@@ -68,10 +78,9 @@ class Main extends Component {
   async fetchPlayLists() {
     const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
     const result = await getPlaylists();
-    this.setState({
-      playlists: result.data.items,
-      isLoading: false,
-    });
+    return result.data.items
+      ? orderBy(result.data.items, ['name'], ['asc'])
+      : [];
   }
 
   showComplete() {
