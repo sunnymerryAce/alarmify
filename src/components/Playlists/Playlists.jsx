@@ -38,21 +38,6 @@ export default class Playlists extends Component {
     }
   }
 
-  fetchPlayLists() {
-    fetch(
-      'https://asia-northeast1-alarmify-5f826.cloudfunctions.net/getPlaylists',
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        this.setState({
-          isPlaying: this.state.isPlaying,
-          playlists: json.items,
-        });
-      });
-  }
-
   render() {
     return (
       <div className="Playlists swiper-container">
