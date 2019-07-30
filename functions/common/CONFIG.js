@@ -22,6 +22,7 @@ const CONFIG = {
     GET_USER_INFO: 'https://api.spotify.com/v1/me',
     GET_PLAYLIST: useId =>
       `https://api.spotify.com/v1/users/${useId}/playlists`,
+    PUT_PLAY: 'https://api.spotify.com/v1/me/player/play',
   },
 };
 module.exports.CONFIG = CONFIG;

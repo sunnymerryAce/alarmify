@@ -108,6 +108,7 @@ const getUser = client => {
           access_token: response.data.fields.access_token.stringValue,
           refresh_token: response.data.fields.refresh_token.stringValue,
           playlistUri: response.data.fields.playlistUri.stringValue,
+          deviceId: response.data.fields.deviceId.stringValue,
         };
         resolve(user);
       }
@@ -147,6 +148,9 @@ const updateUser = ({
           stringValue: refresh_token
             ? `${refresh_token}`
             : `${user.refresh_token}`,
+        },
+        deviceId: {
+          stringValue: '',
         },
         playlistUri: {
           stringValue: playlistUri ? `${playlistUri}` : `${user.playlistUri}`,
@@ -265,13 +269,18 @@ const setScheduler = ({ client, hour, minute }) => {
  * @param {string} accessToken
  * @param {string} playlistUri
  */
-const playSpotify = async (accessToken, playlistUri) => {
+const playSpotify = async (accessToken, playlistUri, deviceId = '') => {
+  const query = getURLSearchParams({ device_id: deviceId });
+  const uri = deviceId
+    ? `${CONFIG.SPOTIFY_API.PUT_PLAY}?${query.toString()}`
+    : CONFIG.SPOTIFY_API.PUT_PLAY;
+  console.log(uri);
   const bodyObject = {
     context_uri: playlistUri,
   };
   const options = {
     method: 'PUT',
-    uri: 'https://api.spotify.com/v1/me/player/play',
+    uri,
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

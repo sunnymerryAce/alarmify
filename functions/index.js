@@ -110,7 +110,11 @@ exports.playSpotify = functions
       // 2.ユーザ情報取得 from Firestore
       const user = await getUser(client);
       // 3. 再生を試す
-      res = await playSpotify(user.access_token, user.playlistUri);
+      res = await playSpotify(
+        user.access_token,
+        user.playlistUri,
+        user.deviceId,
+      );
       // AccessTokenがexpiredの場合
       if (res.status === 401) {
         // 4. 新しいSpotifyのAccessToken取得
@@ -125,6 +129,7 @@ exports.playSpotify = functions
         res = await playSpotify(
           newSpotifyAccessToken.access_token,
           user.playlistUri,
+          user.deviceId,
         );
       }
     } catch (error) {
