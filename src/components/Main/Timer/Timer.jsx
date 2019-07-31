@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import './Timer.scss';
+import styled from 'styled-components';
+// import './Timer.scss';
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import lime from '@material-ui/core/colors/lime';
 import { toggleScroll } from '../../../helper/util';
+
+const TimerDiv = styled.div`
+  padding: 10vh 0 7vh;
+  font-size: 30px;
+  color: #fff;
+`;
 export default class Timer extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +59,7 @@ export default class Timer extends Component {
 
   render() {
     return (
-      <div className="Timer">
+      <TimerDiv className="Timer">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <ThemeProvider theme={this.defaultMaterialTheme}>
             <TimePicker
@@ -70,7 +77,7 @@ export default class Timer extends Component {
             />
           </ThemeProvider>
         </MuiPickersUtilsProvider>
-      </div>
+      </TimerDiv>
     );
   }
 }

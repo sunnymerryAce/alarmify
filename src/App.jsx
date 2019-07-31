@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import 'modern-normalize/modern-normalize.css';
+import 'swiper/dist/css/swiper.min.css';
 import './App.css';
 
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';

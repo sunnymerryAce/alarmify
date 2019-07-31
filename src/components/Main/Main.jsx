@@ -4,13 +4,115 @@ import 'firebase/functions';
 import { orderBy } from 'lodash-es';
 
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import { withRouter } from 'react-router';
-import './Main.scss';
 import check from '../../images/baseline-check_circle_outline-24px.svg'; // Tell Webpack this JS file uses this image
 
 import Timer from './Timer/Timer';
 import Playlists from '../Playlists/Playlists';
 import { getQueryObject } from '../../helper/util.js';
+
+const Loading = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  top: 0;
+  left: 0;
+  z-index: 999;
+`;
+
+const Complete = styled.div`
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 70px;
+  height: 70px;
+  img {
+    width: 100%;
+  }
+`;
+
+const Loader = styled.div`
+  color: #ffffff;
+  font-size: 10px;
+  margin: 45vh auto;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation: load7 1.8s infinite ease-in-out;
+  animation: load7 1.8s infinite ease-in-out;
+  &::before,
+  &::after {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: load7 1.8s infinite ease-in-out;
+    animation: load7 1.8s infinite ease-in-out;
+    content: '';
+    position: absolute;
+    top: 0;
+  }
+  &::before {
+    left: -3.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+  &::after {
+    left: 3.5em;
+  }
+  @-webkit-keyframes load7 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+      box-shadow: 0 2.5em 0 0;
+    }
+  }
+  @keyframes load7 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+      box-shadow: 0 2.5em 0 0;
+    }
+  }
+`;
+const Title = styled.div`
+  font-size: 25px;
+  font-weight: bold;
+  letter-spacing: 0;
+  padding-bottom: 2vh;
+`;
+const SetButton = styled.div`
+  background-color: #1db954;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 30px;
+  border-radius: 50px;
+  width: 70%;
+  padding: 10px 0;
+  margin: 7vh auto;
+`;
 
 class Main extends Component {
   constructor(props) {
@@ -147,7 +249,7 @@ class Main extends Component {
           onChangeHour={this.onChangeHour.bind(this)}
           onChangeMinute={this.onChangeMinute.bind(this)}
         />
-        <div className="title">{this.state.title}</div>
+        <Title>{this.state.title}</Title>
         {!this.state.isLoading && (
           <Playlists
             playlists={this.state.playlists}
@@ -155,18 +257,16 @@ class Main extends Component {
             changeTitle={this.changeTitle.bind(this)}
           />
         )}
-        <div className="button-set" onClick={this.setScheduler.bind(this)}>
-          SET ALARM
-        </div>
-        <div
+        <SetButton onClick={this.setScheduler.bind(this)}>SET ALARM</SetButton>
+        <Loading
           className="Loading"
           style={{ display: this.state.isFetching ? 'block' : 'none' }}
         >
-          <div className="loader" ref={this.$loader} />
-          <div className="complete" ref={this.$complete}>
+          <Loader className="loader" ref={this.$loader} />
+          <Complete ref={this.$complete}>
             <img src={check} alt="check" />
-          </div>
-        </div>
+          </Complete>
+        </Loading>
       </div>
     );
   }

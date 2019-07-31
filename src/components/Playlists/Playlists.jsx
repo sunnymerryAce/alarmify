@@ -1,7 +1,18 @@
 import Swiper from 'swiper';
 import React, { Component } from 'react';
-import './Playlists.css';
+import styled from 'styled-components';
 
+const Playlist = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+const PlaylistItem = styled.li`
+  width: 50%;
+  background: transparent;
+  img {
+    width: 100%;
+  }
+`;
 export default class Playlists extends Component {
   constructor(props) {
     super(props);
@@ -40,16 +51,16 @@ export default class Playlists extends Component {
 
   render() {
     return (
-      <div className="Playlists swiper-container">
-        <ul className="swiper-wrapper">
+      <div className="swiper-container">
+        <Playlist className="swiper-wrapper">
           {this.props.playlists.map((item, key) => {
             return (
-              <li key={key} className="playlist-item swiper-slide">
+              <PlaylistItem key={key} className="swiper-slide">
                 <img src={item.images[0].url} alt="" />
-              </li>
+              </PlaylistItem>
             );
           })}
-        </ul>
+        </Playlist>
       </div>
     );
   }
