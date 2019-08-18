@@ -104,19 +104,19 @@ exports.playSpotify = functions
   .pubsub.topic(CONFIG.JOB_NAME)
   .onPublish(async message => {
     let res = null;
-    try {
-      // 1. OAuthでOAuth2Clientを取得
-      const client = await getGCPAuthorizedClient();
-      // 2.ユーザ情報取得 from Firestore
-      const user = await getUser(client);
-      // 3. 再生を試す
-      res = await playSpotify(
-        user.access_token,
-        user.playlistUri,
-        user.deviceId,
-      );
+    // 1. OAuthでOAuth2Clientを取得
+    const client = await getGCPAuthorizedClient();
+    // 2.ユーザ情報取得 from Firestore
+    const user = await getUser(client);
+    // 3. 再生を試す
+    res = await playSpotify(
+      user.access_token,
+      user.playlistUri,
+      user.deviceId,
+    ).catch(async err => {
       // AccessTokenがexpiredの場合
-      if (res.status === 401) {
+      const regExp = new RegExp(CONFIG.ERROR[401]);
+      if (err.message && regExp.test(err.message)) {
         // 4. 新しいSpotifyのAccessToken取得
         const newSpotifyAccessToken = await getSpotifyAccessToken(user, true);
         // 5. Firestoreに値を保存
@@ -125,14 +125,13 @@ exports.playSpotify = functions
           access_token: newSpotifyAccessToken.access_token,
           refresh_token: newSpotifyAccessToken.refresh_token,
         });
-        // 6. 再生
-        res = await playSpotify(
+        // 再トライ
+        return await playSpotify(
           newSpotifyAccessToken.access_token,
           user.playlistUri,
           user.deviceId,
         );
       }
-    } catch (error) {
-      console.log(`error occurred  ${err}`);
-    }
+    });
+    return res;
   });
