@@ -123,8 +123,8 @@ class Main extends Component {
       minute: '0',
       playlistUri: '',
       title: '',
-      isLoading: true,
-      isFetching: false,
+      isFetching: true,
+      isLoaded: false,
     };
     this.$loader = React.createRef();
     this.$complete = React.createRef();
@@ -143,7 +143,8 @@ class Main extends Component {
       // プレイリスト一覧を表示
       this.setState({
         playlists: await this.fetchPlayLists({ user: data }),
-        isLoading: false,
+        isFetching: false,
+        isLoaded: true,
       });
       // Firestoreに未登録の場合
     } else if (window.location.search) {
@@ -151,7 +152,8 @@ class Main extends Component {
       const { code } = getQueryObject();
       this.setState({
         playlists: await this.fetchPlayLists({ code }),
-        isLoading: false,
+        isFetching: false,
+        isLoaded: true,
       });
     } else {
       // ログイン画面表示
@@ -250,7 +252,7 @@ class Main extends Component {
           onChangeMinute={this.onChangeMinute.bind(this)}
         />
         <Title>{this.state.title}</Title>
-        {!this.state.isLoading && (
+        {this.state.isLoaded && (
           <Playlists
             playlists={this.state.playlists}
             onChangePlaylist={this.onChangePlaylist.bind(this)}

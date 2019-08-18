@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './Login.css';
 import CONFIG from '../../helper/CONFIG';
 
 export default class Login extends Component {
