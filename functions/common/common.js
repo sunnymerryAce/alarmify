@@ -1,4 +1,3 @@
-const rp = require('request-promise');
 const fetch = require('node-fetch');
 const { URLSearchParams } = require('url');
 const { google } = require('googleapis');
@@ -28,12 +27,12 @@ const getURLSearchParams = params => {
 /**
  * Fetch HTTP request with handling server errors
  * @param {Object} params
- * @param {string} param.url
+ * @param {string} param.uri
  * @param {Object} param.options
  * @returns {Object}
  * @throws {Error}
  */
-const fetchWithErrorHandling = ({ url, options }) => {
+const fetchWithErrorHandling = ({ uri, options }) => {
   const handleErrors = res => {
     if (res.ok) {
       return res;
@@ -57,7 +56,7 @@ const fetchWithErrorHandling = ({ url, options }) => {
   };
   // fetchの結果を非同期で返す
   return (
-    fetch(url, options)
+    fetch(uri, options)
       // サーバサイドで発行されたエラーステータスを処理する
       .then(handleErrors)
       // 正常なレスポンスからJSONオブジェクトをパースする
@@ -218,16 +217,16 @@ const getUserPlaylists = async accessToken => {
   };
   // Spotifyユーザ情報を取得
   const userInfo = await fetchWithErrorHandling({
-    url: CONFIG.SPOTIFY_API.GET_USER_INFO,
+    uri: CONFIG.SPOTIFY_API.GET_USER_INFO,
     options,
   });
 
   // プレイリストを取得
   const query = getURLSearchParams({ limit: 50 });
-  const url = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
+  const uri = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
   )}?${query.toString()}`;
-  playlistInfo = await fetchWithErrorHandling({ url, options });
+  playlistInfo = await fetchWithErrorHandling({ uri, options });
   return playlistInfo;
 };
 
@@ -274,25 +273,20 @@ const playSpotify = async (accessToken, playlistUri, deviceId = '') => {
   const uri = deviceId
     ? `${CONFIG.SPOTIFY_API.PUT_PLAY}?${query.toString()}`
     : CONFIG.SPOTIFY_API.PUT_PLAY;
-  console.log(uri);
   const bodyObject = {
     context_uri: playlistUri,
   };
   const options = {
     method: 'PUT',
-    uri,
+    body: JSON.stringify(bodyObject),
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify(bodyObject),
   };
-  try {
-    const res = await rp(options);
-    return res;
-  } catch (err) {
-    console.log(`error occurred  ${err}`);
-    return err;
-  }
+  return await fetchWithErrorHandling({
+    uri: uri,
+    options,
+  });
 };
 
 module.exports.getGCPAuthorizedClient = getGCPAuthorizedClient;
