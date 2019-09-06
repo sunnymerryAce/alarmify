@@ -9,7 +9,6 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import Timer from './Timer/Timer';
 import Playlists from '../Playlists/Playlists';
 import { getQueryObject } from '../../helper/functions';
-import check from '../../images/baseline-check_circle_outline-24px.svg';
 
 interface Props extends RouteComponentProps {}
 interface State {
@@ -24,6 +23,7 @@ interface State {
 
 const $loader = React.createRef<HTMLInputElement>();
 const $complete = React.createRef<HTMLInputElement>();
+const check = require('../../images/baseline-check_circle_outline-24px.svg');
 
 class Main extends React.Component<Props, State> {
   constructor(props: Props) {

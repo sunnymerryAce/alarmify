@@ -8,49 +8,42 @@ interface Props {
 }
 interface State {
   isPlaying: boolean;
-  coverflow: Swiper | null;
 }
 
 export default class Playlists extends React.Component<Props, State> {
+  coverflow: Swiper | null;
   constructor(props: Props) {
     super(props);
     this.state = {
       isPlaying: false,
-      coverflow: null,
     };
+    this.coverflow = null;
   }
   componentDidMount() {
     if (document.querySelector('.swiper-slide')) {
-      this.setState({
-        coverflow: new Swiper('.swiper-container', {
-          // init: false,
-          effect: 'coverflow',
-          grabCursor: true,
-          loop: false,
-          centeredSlides: true,
-          slidesPerView: 'auto',
-          coverflowEffect: {
-            rotate: 50,
-            stretch: 0,
-            depth: 100,
-            modifier: 1,
-            slideShadows: true,
-          },
-          speed: 500,
-        }),
+      this.coverflow = new Swiper('.swiper-container', {
+        effect: 'coverflow',
+        grabCursor: true,
+        loop: false,
+        centeredSlides: true,
+        slidesPerView: 'auto',
+        coverflowEffect: {
+          rotate: 50,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        },
+        speed: 500,
       });
-      if (this.state.coverflow) {
-        const activeIndex = this.state.coverflow.activeIndex;
-        this.props.onChangePlaylist(activeIndex);
-        // this.state.coverflow.on('init', () => {
-        //   this.props.onChangePlaylist(activeIndex);
-        // });
-        this.state.coverflow.on('slideChange', () => {
-          this.props.onChangePlaylist(activeIndex);
-        });
-        // TODO: initを自動にしても大丈夫か
-        // this.state.coverflow.init();
+      if (this.coverflow) {
+        this.props.onChangePlaylist(this.coverflow.activeIndex);
       }
+      this.coverflow.on('slideChange', () => {
+        if (this.coverflow) {
+          this.props.onChangePlaylist(this.coverflow.activeIndex);
+        }
+      });
     }
   }
 
