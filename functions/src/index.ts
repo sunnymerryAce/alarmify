@@ -1,5 +1,6 @@
-const functions = require('firebase-functions');
-const { CONFIG } = require('./common/CONFIG');
+import * as functions from 'firebase-functions';
+import CONFIG from './util/CONFIG';
+
 const {
   getGCPAuthorizedClient,
   getUser,
@@ -11,14 +12,22 @@ const {
 } = require('./common/common');
 
 /**
- * Firestoreのユーザ情報を取得する
+ * Firestoreユーザ情報取得
  */
-exports.getFirestoreUser = functions.https.onCall(async (data, context) => {
-  const client = await getGCPAuthorizedClient();
-  return await getUser(client).catch(() => {
-    return null;
-  });
-});
+if (
+  !process.env.FUNCTION_NAME ||
+  process.env.FUNCTION_NAME === 'getUserFromFirestore'
+) {
+  exports.getUserFromFirestore = require('./index/getUserFromFirestore');
+}
+
+// exports.getUserFromFirestore = functions.https.onCall(async (data, context) => {
+//   const client = await getGCPAuthorizedClient();
+//   return await getUser(client).catch(() => {
+//     return null;
+//   });
+// });
+
 
 /**
  * ユーザーのSpotifyプレイリスト一覧を取得する
