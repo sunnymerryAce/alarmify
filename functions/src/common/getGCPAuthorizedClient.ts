@@ -1,4 +1,4 @@
-const { google } = require('googleapis');
+import { google } from 'googleapis';
 
 /**
  * GCPのOAuth認証を行い、クライアント認証情報を取得する

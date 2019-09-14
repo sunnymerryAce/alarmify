@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
-    "lib": ["es6"],
+    "lib": ["es2017", "dom"],
     "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "node", // Node方式でモジュール解決
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "typeRoots": [
+      "node_modules/@types", // デフォルトではここだけ読む 忘れず書き添える
+      "types" // ここを読むように追記
+    ]
   },
   "compileOnSave": true,
   "include": ["src"],

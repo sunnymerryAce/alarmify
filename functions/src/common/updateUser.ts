@@ -1,24 +1,18 @@
+import { UpdateUserParam } from '../../../types';
+import CONFIG from '../util/CONFIG';
+import { google } from 'googleapis';
+const firestore = google.firestore('v1beta1');
+
 /**
  * Firestoreのユーザ情報を更新する
- * @param {Object} params
- * @param {Object} params.user user information
- * @param {OAuth2Client} params.client
- * @param {String} params.access_token
- * @param {String} params.refresh_token
- * @param {String} params.playlistUri
- * @returns {Object} fields of document
+ * @param param
  */
-const updateUser = ({
-  user,
-  client,
-  access_token,
-  refresh_token,
-  playlistUri,
-}) => {
-  const documentPath = `users/${userName}`;
+const updateUser = (param: UpdateUserParam): Promise<any> => {
+  const { user, client, access_token, refresh_token, playlistUri } = param;
+  const documentPath = `users/${CONFIG.USER_NAME}`;
   const params = {
     auth: client,
-    name: `projects/${projectId}/databases/${databaseId}/documents/${documentPath}`,
+    name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/${documentPath}`,
     requestBody: {
       fields: {
         access_token: {
@@ -40,14 +34,20 @@ const updateUser = ({
       },
     },
   };
+  const castedParam = <any>params;
   return new Promise((resolve, reject) => {
-    firestore.projects.databases.documents.patch(params, (err, response) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        resolve(response.data.fields);
-      }
-    });
+    firestore.projects.databases.documents.patch(
+      castedParam,
+      (err: any, response: any) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(response.data.fields);
+        }
+      },
+    );
   });
 };
+
+export default updateUser;
