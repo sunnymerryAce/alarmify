@@ -21,11 +21,11 @@ interface State {
   isLoaded: boolean;
 }
 
-const $loader = React.createRef<HTMLInputElement>();
-const $complete = React.createRef<HTMLInputElement>();
 const check = require('../../images/baseline-check_circle_outline-24px.svg');
 
 class Main extends React.Component<Props, State> {
+  $loader: HTMLElement | null;
+  $complete: HTMLElement | null;
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -37,18 +37,20 @@ class Main extends React.Component<Props, State> {
       isFetching: true,
       isLoaded: false,
     };
-    // this.$loader = React.createRef();
-    // this.$complete = React.createRef();
+    this.$loader = null;
+    this.$complete = null;
 
     this.initialize();
   }
 
   async initialize() {
     // Firestoreの情報を参照
-    const getFirestoreUser = firebase
+    const str = 'test';
+    const ee = str as any;
+    const getUserFromFirestore = firebase
       .functions()
-      .httpsCallable('getFirestoreUser');
-    const { data } = await getFirestoreUser();
+      .httpsCallable('getUserFromFirestore');
+    const { data } = await getUserFromFirestore();
     // Firestoreに登録済みの場合
     if (data) {
       // プレイリスト一覧を表示
@@ -117,19 +119,19 @@ class Main extends React.Component<Props, State> {
     const timeline = anime.timeline();
     // ローディング消す
     timeline.add({
-      targets: [$loader.current],
+      targets: [this.$loader],
       scale: {
         value: [1, 0],
         duration: 200,
         easing: 'easeOutQuart',
       },
       complete: () => {
-        if ($complete.current) $complete.current.style.display = 'block';
+        if (this.$complete) this.$complete.style.display = 'block';
       },
     });
     // チェックマーク出す
     timeline.add({
-      targets: [$complete.current],
+      targets: [this.$complete],
       scale: {
         value: [0, 1],
         duration: 300,
@@ -138,7 +140,7 @@ class Main extends React.Component<Props, State> {
     });
     // チェックマーク消す
     timeline.add({
-      targets: [$complete.current],
+      targets: [this.$complete],
       scale: {
         value: [1, 0],
         duration: 200,
@@ -146,8 +148,8 @@ class Main extends React.Component<Props, State> {
         easing: 'easeOutQuart',
       },
       complete: () => {
-        if ($loader.current) $loader.current.style.transform = '';
-        if ($complete.current) $complete.current.style.display = 'none';
+        if (this.$loader) this.$loader.style.transform = '';
+        if (this.$complete) this.$complete.style.display = 'none';
         this.setState({
           isFetching: false,
         });
@@ -174,8 +176,8 @@ class Main extends React.Component<Props, State> {
           className="Loading"
           style={{ display: this.state.isFetching ? 'block' : 'none' }}
         >
-          <Loader className="loader" ref={$loader} />
-          <Complete ref={$complete}>
+          <Loader className="loader" ref={$el => (this.$loader = $el)} />
+          <Complete ref={$el => (this.$complete = $el)}>
             <img src={check} alt="check" />
           </Complete>
         </Loading>

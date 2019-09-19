@@ -1,27 +1,18 @@
 import Swiper from 'swiper';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 interface Props {
-  onChangePlaylist: Function;
+  onChangePlaylist(index: number): void;
   playlists: Array<any>;
 }
-interface State {
-  isPlaying: boolean;
-}
+const Playlists: React.FC<Props> = props => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-export default class Playlists extends React.Component<Props, State> {
-  coverflow: Swiper | null;
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      isPlaying: false,
-    };
-    this.coverflow = null;
-  }
-  componentDidMount() {
+  useEffect(() => {
+    console.log('useeffect');
     if (document.querySelector('.swiper-slide')) {
-      this.coverflow = new Swiper('.swiper-container', {
+      const coverflow = new Swiper('.swiper-container', {
         effect: 'coverflow',
         grabCursor: true,
         loop: false,
@@ -36,33 +27,60 @@ export default class Playlists extends React.Component<Props, State> {
         },
         speed: 500,
       });
-      if (this.coverflow) {
-        this.props.onChangePlaylist(this.coverflow.activeIndex);
+      if (coverflow) {
+        props.onChangePlaylist(coverflow.activeIndex);
       }
-      this.coverflow.on('slideChange', () => {
-        if (this.coverflow) {
-          this.props.onChangePlaylist(this.coverflow.activeIndex);
+      coverflow.on('slideChange', () => {
+        if (coverflow) {
+          props.onChangePlaylist(coverflow.activeIndex);
         }
       });
     }
-  }
+  }, []);
 
-  render() {
-    return (
-      <div className="swiper-container">
-        <Playlist className="swiper-wrapper">
-          {this.props.playlists.map((item, key) => {
-            return (
-              <PlaylistItem key={key} className="swiper-slide">
-                <img src={item.images[0].url} alt="" />
-              </PlaylistItem>
-            );
-          })}
-        </Playlist>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="swiper-container">
+      <Playlist className="swiper-wrapper">
+        {props.playlists.map((item, key) => {
+          return (
+            <PlaylistItem key={key} className="swiper-slide">
+              <img src={item.images[0].url} alt="" />
+            </PlaylistItem>
+          );
+        })}
+      </Playlist>
+    </div>
+  );
+};
+
+export default Playlists;
+// export default class Playlists extends React.Component<Props, State> {
+//   coverflow: Swiper | null;
+//   constructor(props: Props) {
+//     super(props);
+//     this.state = {
+//       isPlaying: false,
+//     };
+//     this.coverflow = null;
+//   }
+//   componentDidMount() {}
+
+//   render() {
+//     return (
+//       <div className="swiper-container">
+//         <Playlist className="swiper-wrapper">
+//           {this.props.playlists.map((item, key) => {
+//             return (
+//               <PlaylistItem key={key} className="swiper-slide">
+//                 <img src={item.images[0].url} alt="" />
+//               </PlaylistItem>
+//             );
+//           })}
+//         </Playlist>
+//       </div>
+//     );
+//   }
+// }
 
 const Playlist = styled.ul`
   list-style: none;
