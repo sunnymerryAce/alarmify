@@ -6,6 +6,7 @@ import createURLSearchParams from '../util/functions/createURLSearchParams';
  * Spotify APIのアクセストークンを取得する
  * @param user ユーザ情報
  * @param isRefresh リフレッシュトークンを使った再取得かどうか
+ * @returns Spotify token Object
  */
 const getSpotifyAccessToken = async (
   user: User,

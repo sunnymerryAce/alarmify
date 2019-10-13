@@ -3,7 +3,7 @@ import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
 
 /**
- * ユーザのプレイリスト一覧を取得する(SpotifyAPIリクエスト)
+ * get User's playlists
  * @param accessToken for Spotify
  * @returns playlists object
  */

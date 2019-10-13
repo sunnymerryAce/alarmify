@@ -45,12 +45,10 @@ class Main extends React.Component<Props, State> {
 
   async initialize() {
     // Firestoreの情報を参照
-    const str = 'test';
-    const ee = str as any;
-    const getUserFromFirestore = firebase
+    const getUser = firebase
       .functions()
-      .httpsCallable('getUserFromFirestore');
-    const { data } = await getUserFromFirestore();
+      .httpsCallable('getUser');
+    const { data } = await getUser();
     // Firestoreに登録済みの場合
     if (data) {
       // プレイリスト一覧を表示

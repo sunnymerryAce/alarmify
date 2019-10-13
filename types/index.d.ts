@@ -21,14 +21,14 @@ export interface User {
 
 export interface UpdateUserParam {
   user: User;
-  client?: Compute | JWT | UserRefreshClient;
+  client: any;
   access_token?: string;
   refresh_token?: string;
   playlistUri?: string;
 }
 
 export interface SetSchedulerParam {
-  client: Compute | JWT | UserRefreshClient;
+  client: any;
   hour: string;
   minute: string;
 }
