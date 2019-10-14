@@ -28,16 +28,20 @@ module.exports.playSpotify = functions
       const regExp = new RegExp(CONFIG.ERROR[401]);
       if (err.message && regExp.test(err.message)) {
         // 4. 新しいSpotifyのAccessToken取得
-        const newSpotifyAccessToken = await getSpotifyAccessToken(user, true);
+        const { access_token, refresh_token } = await getSpotifyAccessToken(
+          user,
+          true,
+        );
         // 5. Firestoreに値を保存
         await updateUser({
-          user: user,
-          access_token: newSpotifyAccessToken.access_token,
-          refresh_token: newSpotifyAccessToken.refresh_token,
+          user,
+          client,
+          access_token: access_token,
+          refresh_token: refresh_token,
         });
         // 再トライ
         return await playSpotify({
-          accessToken: newSpotifyAccessToken.access_token,
+          accessToken: access_token,
           playlistUri: user.playlistUri,
           deviceId: user.deviceId ? user.deviceId : '',
         });

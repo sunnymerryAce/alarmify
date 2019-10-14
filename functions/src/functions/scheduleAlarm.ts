@@ -14,7 +14,8 @@ module.exports.scheduleAlarm = functions.https.onCall(async (data, context) => {
     const user = await getUserFromFirestore(client);
     // 3. 再生するプレイリストを保存
     await updateUser({
-      user: user,
+      user,
+      client,
       playlistUri: data.playlistUri,
     });
     // 4. cronジョブを設定
