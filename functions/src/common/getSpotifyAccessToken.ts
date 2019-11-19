@@ -1,3 +1,4 @@
+import fetch, { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
 import { User } from '../../../types/index';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
@@ -14,7 +15,7 @@ const getSpotifyAccessToken = async (
 ): Promise<any> => {
   const secretKey = `${CONFIG.SPOTIFY_CLIENT_ID}:${CONFIG.SPOTIFY_CLIENT_SECRET}`;
   const base64 = Buffer.from(secretKey).toString('base64');
-  const params = {
+  const params: RequestInit = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

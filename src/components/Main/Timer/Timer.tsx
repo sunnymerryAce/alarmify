@@ -4,7 +4,7 @@ import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import { toggleScroll } from '../../../helper/functions';
+import toggleScrollEvent from '../../../util/functions/toggleScrollEvent';
 
 interface Props {
   onChangeHour: Function;
@@ -33,12 +33,12 @@ export default class Timer extends React.Component<Props, State> {
           <ThemeProvider theme={defaultMaterialTheme}>
             <TimePicker
               value={this.state.selectedDate}
-              onChange={e => this.handleDateChange(e)}
+              onChange={(e) => this.handleDateChange(e)}
               onOpen={() => {
-                toggleScroll(true);
+                toggleScrollEvent(true);
               }}
               onClose={() => {
-                toggleScroll(false);
+                toggleScrollEvent(false);
                 setTimeout(() => {
                   if (document.activeElement instanceof HTMLElement) {
                     document.activeElement.blur();

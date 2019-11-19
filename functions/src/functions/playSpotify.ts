@@ -9,10 +9,10 @@ import getUserFromFirestore from '../common/getUserFromFirestore';
 /**
  * 接続されたデバイスでSpotifyを再生する
  */
-module.exports.playSpotify = functions
+module.exports = functions
   .region('asia-northeast1')
   .pubsub.topic(CONFIG.JOB_NAME)
-  .onPublish(async message => {
+  .onPublish(async () => {
     let res = null;
     // 1. OAuthでOAuth2Clientを取得
     const client = await getGCPAuthorizedClient();

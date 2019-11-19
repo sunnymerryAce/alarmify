@@ -1,3 +1,4 @@
+import { URLSearchParams } from 'url';
 /**
  * Create URLSearchParams Instance from Object
  * @param params key:value

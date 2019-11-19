@@ -45,10 +45,11 @@ class Main extends React.Component<Props, State> {
 
   async initialize() {
     // Firestoreの情報を参照
-    const getUser = firebase
+    const getUserFromFirestore = firebase
       .functions()
-      .httpsCallable('getUser');
-    const { data } = await getUser();
+      .httpsCallable('getUserFromFirestore');
+    const { data } = await getUserFromFirestore();
+    console.log(data);
     // Firestoreに登録済みの場合
     if (data) {
       // プレイリスト一覧を表示
@@ -108,6 +109,7 @@ class Main extends React.Component<Props, State> {
   async fetchPlayLists({ user = null, code = '' }) {
     const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
     const result = await getPlaylists({ user, code });
+    console.log(result);
     return result.data.items
       ? orderBy(result.data.items, ['name'], ['asc'])
       : [];

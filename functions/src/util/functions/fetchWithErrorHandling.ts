@@ -1,3 +1,4 @@
+import fetch, { RequestInit, Response } from 'node-fetch';
 import CONFIG from '../CONFIG';
 
 /**
@@ -14,10 +15,10 @@ const fetchWithErrorHandling = (url: string, options: RequestInit): any => {
       // サーバサイドで発行されたエラーステータスを処理する
       .then(handleErrors)
       // 正常なレスポンスからJSONオブジェクトをパースする
-      .then(response => response.json())
-      .then(data => data)
+      .then((response) => response.json())
+      .then((data) => data)
       // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
-      .catch(err => {
+      .catch((err) => {
         throw new Error(err);
       })
   );

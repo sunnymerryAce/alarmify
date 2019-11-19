@@ -6,11 +6,10 @@ interface Props {
   onChangePlaylist(index: number): void;
   playlists: Array<any>;
 }
-const Playlists: React.FC<Props> = props => {
+const Playlists: React.FC<Props> = (props) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('useeffect');
     if (document.querySelector('.swiper-slide')) {
       const coverflow = new Swiper('.swiper-container', {
         effect: 'coverflow',
@@ -44,7 +43,7 @@ const Playlists: React.FC<Props> = props => {
         {props.playlists.map((item, key) => {
           return (
             <PlaylistItem key={key} className="swiper-slide">
-              <img src={item.images[0].url} alt="" />
+              <img src={item.images.length ? item.images[0].url : ''} alt="" />
             </PlaylistItem>
           );
         })}
