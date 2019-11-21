@@ -1,12 +1,23 @@
 import * as functions from 'firebase-functions';
 import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
 import getUserFromFirestore from '../common/getUserFromFirestore';
+import { User } from '../../../types';
+
 /**
  * Firestoreからユーザ情報を取得する
  */
 module.exports = functions.https.onCall(async () => {
-  const client = await getGCPAuthorizedClient();
-  return await getUserFromFirestore(client).catch(() => {
-    return null;
-  });
+  try {
+    const client = await getGCPAuthorizedClient();
+    const user: User = await getUserFromFirestore(client);
+    return {
+      ok: true,
+      user,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error,
+    };
+  }
 });

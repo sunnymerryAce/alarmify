@@ -51,10 +51,10 @@ class Main extends React.Component<Props, State> {
     const { data } = await getUserFromFirestore();
     console.log(data);
     // Firestoreに登録済みの場合
-    if (data) {
+    if (data.ok) {
       // プレイリスト一覧を表示
       this.setState({
-        playlists: await this.fetchPlayLists({ user: data }),
+        playlists: await this.fetchPlayLists({ user: data.user }),
         isFetching: false,
         isLoaded: true,
       });
@@ -62,8 +62,10 @@ class Main extends React.Component<Props, State> {
     } else if (window.location.search) {
       // パラメータのauthorization-codeでプレイリスト一覧を表示
       const code: string = getQueryObject().code;
+      const playlists = await this.fetchPlayLists({ code });
+      console.log(playlists);
       this.setState({
-        playlists: await this.fetchPlayLists({ code }),
+        playlists,
         isFetching: false,
         isLoaded: true,
       });
@@ -102,16 +104,16 @@ class Main extends React.Component<Props, State> {
       playlistUri: this.state.playlistUri,
     };
     const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
-    await scheduleAlarm(data).catch(error => false);
+    const res = await scheduleAlarm(data).catch((error) => false);
+    console.log(res);
     this.showComplete();
   }
 
   async fetchPlayLists({ user = null, code = '' }) {
     const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
-    const result = await getPlaylists({ user, code });
-    console.log(result);
-    return result.data.items
-      ? orderBy(result.data.items, ['name'], ['asc'])
+    const { data } = await getPlaylists({ user, code });
+    return data.ok && data.playlists.items
+      ? orderBy(data.playlists.items, ['name'], ['asc'])
       : [];
   }
 
@@ -176,8 +178,8 @@ class Main extends React.Component<Props, State> {
           className="Loading"
           style={{ display: this.state.isFetching ? 'block' : 'none' }}
         >
-          <Loader className="loader" ref={$el => (this.$loader = $el)} />
-          <Complete ref={$el => (this.$complete = $el)}>
+          <Loader className="loader" ref={($el) => (this.$loader = $el)} />
+          <Complete ref={($el) => (this.$complete = $el)}>
             <img src={check} alt="check" />
           </Complete>
         </Loading>

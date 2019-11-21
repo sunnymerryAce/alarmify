@@ -1,18 +1,19 @@
 import fetch, { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
-import { User } from '../../../types/index';
+import { GetSpotifyAccessTokenParam } from '../../../types/index';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
 
 /**
  * Spotify APIのアクセストークンを取得する
  * @param user ユーザ情報
+ * @param code Authorization Code
  * @param isRefresh リフレッシュトークンを使った再取得かどうか
  * @returns Spotify token Object
  */
 const getSpotifyAccessToken = async (
-  user: User,
-  isRefresh: boolean,
+  args: GetSpotifyAccessTokenParam,
 ): Promise<any> => {
+  const { isRefresh, code, user } = args;
   const secretKey = `${CONFIG.SPOTIFY_CLIENT_ID}:${CONFIG.SPOTIFY_CLIENT_SECRET}`;
   const base64 = Buffer.from(secretKey).toString('base64');
   const params: RequestInit = {
@@ -23,9 +24,9 @@ const getSpotifyAccessToken = async (
     },
     body: createURLSearchParams({
       grant_type: isRefresh ? 'refresh_token' : 'authorization_code',
-      code: isRefresh ? '' : user.code,
+      code: isRefresh ? '' : code,
       redirect_uri: isRefresh ? '' : CONFIG.REDIRECT_URI,
-      refresh_token: isRefresh ? user.refresh_token : '',
+      refresh_token: isRefresh && user ? user.refresh_token : '',
     }),
   };
   try {

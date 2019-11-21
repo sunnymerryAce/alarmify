@@ -8,28 +8,30 @@ const firestore = google.firestore('v1beta1');
  * @param param
  */
 const updateUser = (param: UpdateUserParam): Promise<any> => {
-  const { user, client, access_token, refresh_token, playlistUri } = param;
-  const documentPath = `users/${CONFIG.USER_NAME}`;
+  const { user, client } = param;
+  const access_token =
+    user && user.access_token ? user.access_token : param.access_token;
+  const refresh_token =
+    user && user.refresh_token ? user.refresh_token : param.refresh_token;
+  const playlistUri =
+    user && user.playlistUri ? user.playlistUri : param.playlistUri;
+  const documentPath: string = `users/${CONFIG.USER_NAME}`;
   const params = {
     auth: client,
     name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/${documentPath}`,
     requestBody: {
       fields: {
         access_token: {
-          stringValue: access_token
-            ? `${access_token}`
-            : `${user.access_token}`,
+          stringValue: access_token ? `${access_token}` : '',
         },
         refresh_token: {
-          stringValue: refresh_token
-            ? `${refresh_token}`
-            : `${user.refresh_token}`,
+          stringValue: refresh_token ? `${refresh_token}` : '',
         },
         deviceId: {
           stringValue: '',
         },
         playlistUri: {
-          stringValue: playlistUri ? `${playlistUri}` : `${user.playlistUri}`,
+          stringValue: playlistUri ? `${playlistUri}` : '',
         },
       },
     },
@@ -40,7 +42,7 @@ const updateUser = (param: UpdateUserParam): Promise<any> => {
     firestore.projects.databases.documents.patch(
       castedParam,
       (err: any, response: any) => {
-        console.log(err)
+        console.log(err);
         if (err) {
           console.error(err);
           reject(err);

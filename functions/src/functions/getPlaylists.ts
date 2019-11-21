@@ -1,72 +1,45 @@
 import * as functions from 'firebase-functions';
 import CONFIG from '../util/CONFIG';
 import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import updateUser from '../common/updateUser';
-import getSpotifyAccessToken from '../common/getSpotifyAccessToken';
+import getNewSpotifyAccessToken from '../common/getNewSpotifyAccessToken';
 import getUserPlaylists from '../common/getUserPlaylists';
-import { User } from '../../../types';
 
 /**
  * ユーザーのSpotifyプレイリスト一覧を取得する
  */
 module.exports = functions.https.onCall(async (data, context) => {
-  console.log(data.user)
-  let res = null;
-  // OAuthでOAuth2Clientを取得
-  const client = await getGCPAuthorizedClient();
-  // AuthorizationCodeがある場合
-  if (data.code) {
-    const newUser: User = {
-      access_token: '',
-      playlistUri: '',
-      code: data.code,
-      refresh_token: '',
-    };
-    // 新しいSpotifyのAccessToken取得
-    const newSpotifyAccessToken = await getSpotifyAccessToken(newUser, false);
-    // Firestoreに値を保存
-    await updateUser({
-      user: newUser,
-      client,
-      access_token: newSpotifyAccessToken.access_token,
-      refresh_token: newSpotifyAccessToken.refresh_token,
+  try {
+    const { code, user } = data;
+    // OAuthでOAuth2Clientを取得
+    const client = await getGCPAuthorizedClient();
+    let accessToken = code
+      ? await getNewSpotifyAccessToken(client, {
+          isRefresh: false,
+          code,
+        })
+      : user.access_token;
+    const playlists = await getUserPlaylists(accessToken).catch(async (err) => {
+      const regExp = new RegExp(CONFIG.ERROR[401]);
+      // AccessTokenがexpiredの場合、新しいAccessTokenを取得する
+      if (err.message && regExp.test(err.message)) {
+        accessToken = await getNewSpotifyAccessToken(client, {
+          isRefresh: true,
+          user,
+        });
+        // リトライ
+        return await getUserPlaylists(accessToken);
+      } else {
+        throw err;
+      }
     });
-    res = await getUserPlaylists(newSpotifyAccessToken.access_token);
-  } else if (data.user) {
-    console.log('getUserPlaylists')
-    // 既存AccessTokenでトライ
-    res = await getUserPlaylists(data.user.access_token).catch(
-      async (err: any) => {
-        console.log('getUserPlaylists error')
-        console.log(err)
-        // AccessTokenがexpiredの場合
-        const regExp = new RegExp(CONFIG.ERROR[401]);
-        if (err.message && regExp.test(err.message)) {
-          // 新しいSpotifyのAccessToken取得
-          const newSpotifyAccessToken = await getSpotifyAccessToken(
-            data.user,
-            true,
-          );
-          console.log(newSpotifyAccessToken)
-          // Firestoreに値を保存
-          await updateUser({
-            user: data.user,
-            client,
-            access_token: newSpotifyAccessToken.access_token,
-            refresh_token: newSpotifyAccessToken.refresh_token,
-          });
-          // 再トライ
-          console.log('getUserPlaylists retry')
-          return await getUserPlaylists(
-            newSpotifyAccessToken.access_token,
-          ).catch((err2: any) => {
-            console.log('getUserPlaylists error2')
-            return err2;
-          });
-        }
-      },
-    );
+    return {
+      ok: true,
+      playlists,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error,
+    };
   }
-  console.log(res)
-  return res;
 });

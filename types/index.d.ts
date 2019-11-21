@@ -20,8 +20,8 @@ export interface User {
 }
 
 export interface UpdateUserParam {
-  user: User;
   client: any;
+  user?: User;
   access_token?: string;
   refresh_token?: string;
   playlistUri?: string;
@@ -37,4 +37,10 @@ export interface PlaySpotifyParam {
   accessToken: string;
   playlistUri: string;
   deviceId: string;
+}
+
+export interface GetSpotifyAccessTokenParam {
+  isRefresh: boolean;
+  user?: User;
+  code?: string;
 }
