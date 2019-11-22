@@ -5,23 +5,27 @@ import CONFIG from '../CONFIG';
  * Fetch HTTP request with handling server errors
  * @param url
  * @param options
- * @returns result data
- * @throws Error
+ * @returns Promise object represents result data
  */
-const fetchWithErrorHandling = (url: string, options: RequestInit): any => {
-  // fetchの結果を非同期で返す
-  return (
-    fetch(url, options)
-      // サーバサイドで発行されたエラーステータスを処理する
-      .then(handleErrors)
-      // 正常なレスポンスからJSONオブジェクトをパースする
-      .then((response) => response.json())
-      .then((data) => data)
-      // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
-      .catch((err) => {
-        throw new Error(err);
-      })
-  );
+const fetchWithErrorHandling = (
+  url: string,
+  options: RequestInit,
+): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    // fetchの結果を非同期で返す
+    return (
+      fetch(url, options)
+        // サーバサイドで発行されたエラーステータスを処理する
+        .then(handleErrors)
+        // 正常なレスポンスからJSONオブジェクトをパースする
+        .then((response) => response.json())
+        .then((data) => resolve(data))
+        // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
+        .catch((err) => {
+          reject(err);
+        })
+    );
+  });
 };
 
 export default fetchWithErrorHandling;

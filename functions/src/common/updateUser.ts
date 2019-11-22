@@ -21,18 +21,24 @@ const updateUser = (param: UpdateUserParam): Promise<any> => {
     name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/${documentPath}`,
     requestBody: {
       fields: {
-        access_token: {
-          stringValue: access_token ? `${access_token}` : '',
-        },
-        refresh_token: {
-          stringValue: refresh_token ? `${refresh_token}` : '',
-        },
+        access_token: access_token
+          ? {
+              stringValue: access_token,
+            }
+          : null,
+        refresh_token: refresh_token
+          ? {
+              stringValue: refresh_token,
+            }
+          : null,
         deviceId: {
           stringValue: '',
         },
-        playlistUri: {
-          stringValue: playlistUri ? `${playlistUri}` : '',
-        },
+        playlistUri: playlistUri
+          ? {
+              stringValue: playlistUri,
+            }
+          : null,
       },
     },
   };
