@@ -235,8 +235,8 @@ export const getQueryObject = (): any => {
 //       .then(response => response.json())
 //       .then(data => data)
 //       // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
-//       .catch(err => {
-//         throw new Error(err);
+//       .catch(error => {
+//         throw new Error(error);
 //       })
 //   );
 // };

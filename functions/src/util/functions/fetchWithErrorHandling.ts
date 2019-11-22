@@ -21,8 +21,8 @@ const fetchWithErrorHandling = (
         .then((response) => response.json())
         .then((data) => resolve(data))
         // ネットワーク周りなどのリクエスト以前の段階でのエラーを処理する
-        .catch((err) => {
-          reject(err);
+        .catch((error) => {
+          reject(error);
         })
     );
   });

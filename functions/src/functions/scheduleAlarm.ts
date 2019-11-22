@@ -25,6 +25,6 @@ module.exports = functions.https.onCall(async (data, context) => {
       minute: data.minute,
     });
   } catch (error) {
-    console.log(`error occurred  ${error}`);
+    console.log(`error occurred: ${error}`);
   }
 });

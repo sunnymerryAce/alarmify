@@ -32,9 +32,9 @@ const getSpotifyAccessToken = async (
   try {
     const response = await fetch(CONFIG.SPOTIFY_API.GET_TOKEN, params);
     return await response.json();
-  } catch (err) {
-    console.log(`error occurred  ${err}`);
-    return err;
+  } catch (error) {
+    console.log(`error occurred  ${error}`);
+    return error;
   }
 };
 

@@ -17,10 +17,10 @@ const getUserFromFirestore = (client: any): Promise<User> => {
   return new Promise((resolve, reject) => {
     firestore.projects.databases.documents.get(
       params,
-      (err: any, response: any) => {
-        if (err) {
-          console.error(err);
-          reject(err);
+      (error: any, response: any) => {
+        if (error) {
+          console.error(error);
+          reject(error);
         } else {
           const {
             access_token,

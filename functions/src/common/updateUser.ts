@@ -47,11 +47,11 @@ const updateUser = (param: UpdateUserParam): Promise<any> => {
   return new Promise((resolve, reject) => {
     firestore.projects.databases.documents.patch(
       castedParam,
-      (err: any, response: any) => {
-        console.log(err);
-        if (err) {
-          console.error(err);
-          reject(err);
+      (error: any, response: any) => {
+        console.log(error);
+        if (error) {
+          console.error(error);
+          reject(error);
         } else {
           resolve(response.data.fields);
         }

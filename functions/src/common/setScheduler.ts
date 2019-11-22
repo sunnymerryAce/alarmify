@@ -26,10 +26,10 @@ const setScheduler = (param: SetSchedulerParam): Promise<any> => {
   return new Promise((resolve, reject) => {
     cloudScheduler.projects.locations.jobs.patch(
       castedParam,
-      (err: any, response: any) => {
-        if (err) {
-          console.error(err);
-          reject(err);
+      (error: any, response: any) => {
+        if (error) {
+          console.error(error);
+          reject(error);
         } else {
           console.log(`Cloud Scheduler設定完了`);
           resolve(response.data);

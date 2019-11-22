@@ -18,10 +18,9 @@ module.exports = functions.https.onCall(async (data, context) => {
           code,
         })
       : user.access_token;
-    const playlists = await getUserPlaylists(accessToken).catch(async (err) => {
-      const regExp = new RegExp(CONFIG.ERROR[401]);
+    const playlists = await getUserPlaylists(accessToken).catch(async (error) => {
       // AccessTokenがexpiredの場合、新しいAccessTokenを取得する
-      if (err.message && regExp.test(err.message)) {
+      if (error.message && CONFIG.REG_EXP.ERROR[401].test(error.message)) {
         accessToken = await getNewSpotifyAccessToken(client, {
           isRefresh: true,
           user,
@@ -29,7 +28,7 @@ module.exports = functions.https.onCall(async (data, context) => {
         // リトライ
         return await getUserPlaylists(accessToken);
       } else {
-        throw err;
+        throw error;
       }
     });
     return {
