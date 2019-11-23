@@ -8,11 +8,11 @@ import setScheduler from '../common/setScheduler';
  */
 module.exports = functions.https.onCall(async (data, context) => {
   try {
-    // 1. OAuthでOAuth2Clientを取得
+    // OAuthでOAuth2Clientを取得
     const client = await getGCPAuthorizedClient();
-    // 2. ユーザ情報取得 from Firestore
+    // Firestoreからユーザ情報取得
     const user = await getUserFromFirestore(client);
-    // 3. 再生するプレイリストを保存
+    // 再生するプレイリストを保存
     await updateUser({
       user,
       client,

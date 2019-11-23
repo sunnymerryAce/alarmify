@@ -1,3 +1,4 @@
+import { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
@@ -8,7 +9,7 @@ import createURLSearchParams from '../util/functions/createURLSearchParams';
  * @returns playlists object
  */
 const getUserPlaylists = async (accessToken: string): Promise<Object> => {
-  const options = {
+  const fetchOptions: RequestInit = {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -17,7 +18,7 @@ const getUserPlaylists = async (accessToken: string): Promise<Object> => {
   // Spotifyユーザ情報を取得
   const userInfo = await fetchWithErrorHandling(
     CONFIG.SPOTIFY_API.GET_USER_INFO,
-    options,
+    fetchOptions,
   );
 
   // プレイリストを取得
@@ -25,7 +26,7 @@ const getUserPlaylists = async (accessToken: string): Promise<Object> => {
   const uri = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
   )}?${query.toString()}`;
-  const playlistInfo = await fetchWithErrorHandling(uri, options);
+  const playlistInfo = await fetchWithErrorHandling(uri, fetchOptions);
   return playlistInfo;
 };
 

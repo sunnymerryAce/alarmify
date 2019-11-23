@@ -1,3 +1,4 @@
+import { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
@@ -18,14 +19,14 @@ const playSpotify = async (param: PlaySpotifyParam): Promise<any> => {
   const bodyObject = {
     context_uri: playlistUri,
   };
-  const options = {
+  const fetchOptions: RequestInit = {
     method: 'PUT',
-    body: JSON.stringify(bodyObject),
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    body: JSON.stringify(bodyObject),
   };
-  return await fetchWithErrorHandling(uri, options);
+  return await fetchWithErrorHandling(uri, fetchOptions);
 };
 
 export default playSpotify;

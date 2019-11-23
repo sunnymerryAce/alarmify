@@ -3,44 +3,35 @@ import CONFIG from '../util/CONFIG';
 import { google } from 'googleapis';
 const firestore = google.firestore('v1beta1');
 
+const createRequestBody = (param: UpdateUserParam): Object => {
+  const requestBody: any = { fields: {} };
+  const { user } = param;
+  requestBody.fields.deviceId.stringValue = '';
+  const access_token =
+    user && user.access_token ? user.access_token : param.access_token;
+  if (access_token) requestBody.fields.access_token.stringValue = access_token;
+  const refresh_token =
+    user && user.refresh_token ? user.refresh_token : param.refresh_token;
+  if (refresh_token)
+    requestBody.fields.refresh_token.stringValue = refresh_token;
+  const playlistUri =
+    user && user.playlistUri ? user.playlistUri : param.playlistUri;
+  if (playlistUri) requestBody.fields.playlistUri.stringValue = playlistUri;
+
+  return requestBody;
+};
+
 /**
  * Firestoreのユーザ情報を更新する
  * @param param
  */
 const updateUser = (param: UpdateUserParam): Promise<any> => {
-  const { user, client } = param;
-  const access_token =
-    user && user.access_token ? user.access_token : param.access_token;
-  const refresh_token =
-    user && user.refresh_token ? user.refresh_token : param.refresh_token;
-  const playlistUri =
-    user && user.playlistUri ? user.playlistUri : param.playlistUri;
   const documentPath: string = `users/${CONFIG.USER_NAME}`;
+  const requestBody: Object = createRequestBody(param);
   const params = {
-    auth: client,
+    auth: param.client,
     name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/${documentPath}`,
-    requestBody: {
-      fields: {
-        access_token: access_token
-          ? {
-              stringValue: access_token,
-            }
-          : null,
-        refresh_token: refresh_token
-          ? {
-              stringValue: refresh_token,
-            }
-          : null,
-        deviceId: {
-          stringValue: '',
-        },
-        playlistUri: playlistUri
-          ? {
-              stringValue: playlistUri,
-            }
-          : null,
-      },
-    },
+    requestBody,
   };
   const castedParam = <any>params;
 
@@ -48,9 +39,7 @@ const updateUser = (param: UpdateUserParam): Promise<any> => {
     firestore.projects.databases.documents.patch(
       castedParam,
       (error: any, response: any) => {
-        console.log(error);
         if (error) {
-          console.error(error);
           reject(error);
         } else {
           resolve(response.data.fields);
