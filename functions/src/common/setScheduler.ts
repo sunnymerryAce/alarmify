@@ -27,13 +27,7 @@ const setScheduler = (param: SetSchedulerParam): Promise<any> => {
     cloudScheduler.projects.locations.jobs.patch(
       castedParam,
       (error: any, response: any) => {
-        if (error) {
-          console.error(error);
-          reject(error);
-        } else {
-          console.log(`Cloud Scheduler設定完了`);
-          resolve(response.data);
-        }
+        error ? reject(error) : resolve(response.data);
       },
     );
   });

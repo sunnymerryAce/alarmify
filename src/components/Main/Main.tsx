@@ -51,7 +51,7 @@ class Main extends React.Component<Props, State> {
     const { data } = await getUserFromFirestore();
     console.log(data);
     // Firestoreに登録済みの場合
-    if (data.ok) {
+    if (data.ok && data.user) {
       // プレイリスト一覧を表示
       this.setState({
         playlists: await this.fetchPlayLists({ user: data.user }),

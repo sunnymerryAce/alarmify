@@ -19,12 +19,19 @@ module.exports = functions.https.onCall(async (data, context) => {
       playlistUri: data.playlistUri,
     });
     // 4. cronジョブを設定
-    return await setScheduler({
+    const res = await setScheduler({
       client,
       hour: data.hour,
       minute: data.minute,
     });
+    return {
+      ok: true,
+      res,
+    };
   } catch (error) {
-    console.log(`error occurred: ${error}`);
+    return {
+      ok: false,
+      error,
+    };
   }
 });

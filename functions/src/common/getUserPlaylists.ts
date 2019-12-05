@@ -7,6 +7,7 @@ import createURLSearchParams from '../util/functions/createURLSearchParams';
  * get User's playlists
  * @param accessToken for Spotify
  * @returns playlists object
+ * @throws Error
  */
 const getUserPlaylists = async (accessToken: string): Promise<Object> => {
   const fetchOptions: RequestInit = {
@@ -20,12 +21,12 @@ const getUserPlaylists = async (accessToken: string): Promise<Object> => {
     CONFIG.SPOTIFY_API.GET_USER_INFO,
     fetchOptions,
   );
-
   // プレイリストを取得
-  const query = createURLSearchParams({ limit: 50 });
   const uri = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
-  )}?${query.toString()}`;
+  )}?${createURLSearchParams({
+    limit: 50,
+  }).toString()}`;
   const playlistInfo = await fetchWithErrorHandling(uri, fetchOptions);
   return playlistInfo;
 };

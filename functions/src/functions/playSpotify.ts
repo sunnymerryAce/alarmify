@@ -28,7 +28,7 @@ module.exports = functions
         if (error.message && CONFIG.REG_EXP.ERROR[401].test(error.message)) {
           const accessToken = await getNewSpotifyAccessToken(client, {
             isRefresh: true,
-            user,
+            refresh_token: user.refresh_token,
           });
           // 再トライ
           return await playSpotify({

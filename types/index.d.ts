@@ -41,6 +41,6 @@ export interface PlaySpotifyParam {
 
 export interface GetSpotifyAccessTokenParam {
   isRefresh: boolean;
-  user?: User;
   code?: string;
+  refresh_token?: string;
 }

@@ -6,6 +6,7 @@ const firestore = google.firestore('v1beta1');
  * get user information from Firestore
  * @param client
  * @returns user information
+ * @throws Error
  */
 const getUserFromFirestore = (client: any): Promise<User> => {
   const documentPath = `users/${CONFIG.USER_NAME}`;
@@ -19,7 +20,6 @@ const getUserFromFirestore = (client: any): Promise<User> => {
       params,
       (error: any, response: any) => {
         if (error) {
-          console.error(error);
           reject(error);
         } else {
           const {

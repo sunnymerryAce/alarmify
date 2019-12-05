@@ -8,6 +8,7 @@ import { PlaySpotifyParam } from '../../../types';
  * 接続先デバイスから音楽を再生する(Spotify APIリクエスト)
  * @param param
  * @returns result
+ * @throws Error
  */
 const playSpotify = async (param: PlaySpotifyParam): Promise<any> => {
   const { accessToken, playlistUri, deviceId } = param;
@@ -16,17 +17,17 @@ const playSpotify = async (param: PlaySpotifyParam): Promise<any> => {
         device_id: deviceId,
       }).toString()}`
     : CONFIG.SPOTIFY_API.PUT_PLAY;
-  const bodyObject = {
-    context_uri: playlistUri,
-  };
   const fetchOptions: RequestInit = {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify(bodyObject),
+    body: JSON.stringify({
+      context_uri: playlistUri,
+    }),
   };
-  return await fetchWithErrorHandling(uri, fetchOptions);
+  const res = await fetchWithErrorHandling(uri, fetchOptions);
+  return res;
 };
 
 export default playSpotify;
