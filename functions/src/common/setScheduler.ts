@@ -23,11 +23,16 @@ const setScheduler = (param: SetSchedulerParam): Promise<any> => {
     auth: client,
   };
   const castedParam = <any>params;
+
   return new Promise((resolve, reject) => {
     cloudScheduler.projects.locations.jobs.patch(
       castedParam,
-      (error: any, response: any) => {
-        error ? reject(error) : resolve(response.data);
+      (error: any, response: any): void => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response.data);
+        }
       },
     );
   });

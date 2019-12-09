@@ -22,7 +22,6 @@ module.exports = functions
       res = await playSpotify({
         accessToken: user.access_token,
         playlistUri: user.playlistUri,
-        deviceId: user.deviceId || '',
       }).catch(async (error) => {
         // AccessTokenがexpiredの場合、新しいAccessTokenを取得する
         if (error.message && CONFIG.REG_EXP.ERROR[401].test(error.message)) {
@@ -34,7 +33,6 @@ module.exports = functions
           return await playSpotify({
             accessToken: accessToken,
             playlistUri: user.playlistUri,
-            deviceId: user.deviceId || '',
           });
         }
       });

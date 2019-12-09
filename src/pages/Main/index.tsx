@@ -3,137 +3,115 @@ import firebase from 'firebase';
 import 'firebase/functions';
 import { orderBy } from 'lodash-es';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import Timer from './Timer/Timer';
-import Playlists from '../Playlists/Playlists';
-import { getQueryObject } from '../../helper/functions';
+import Timer from '../../components/Timer';
+import Playlists from '../../components/Playlists';
+import getQueryParametersForIE11 from '../../util/functions/getQueryParametersForIE11';
 
 interface Props extends RouteComponentProps {}
-interface State {
-  playlists: Array<any>;
-  hour: string;
-  minute: string;
-  playlistUri: string;
-  title: string;
-  isFetching: boolean;
-  isLoaded: boolean;
-}
 
 const check = require('../../images/baseline-check_circle_outline-24px.svg');
 
-class Main extends React.Component<Props, State> {
-  $loader: HTMLElement | null;
-  $complete: HTMLElement | null;
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      playlists: [],
-      hour: '0',
-      minute: '0',
-      playlistUri: '',
-      title: '',
-      isFetching: true,
-      isLoaded: false,
-    };
-    this.$loader = null;
-    this.$complete = null;
+const Main: React.FC<Props> = (props) => {
+  const [hour, setHour] = useState<string>('0');
+  const [minute, setMinute] = useState<string>('0');
+  const [playlists, setPlaylists] = useState<Array<any>>([]);
+  const [playlistUri, setPlaylistUri] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [isFetching, setIsFetching] = useState<boolean>(true);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [completeVisible, setCompleteVisible] = useState<boolean>(false);
 
-    this.initialize();
-  }
+  const loader = useRef(document.createElement('div'));
+  const complete = useRef(document.createElement('div'));
 
-  async initialize() {
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    if (completeVisible) {
+      showComplete();
+    }
+  }, [completeVisible]);
+
+  const initialize = async () => {
     // Firestoreの情報を参照
     const getUserFromFirestore = firebase
       .functions()
       .httpsCallable('getUserFromFirestore');
     const { data } = await getUserFromFirestore();
-    console.log(data);
     // Firestoreに登録済みの場合
-    if (data.ok && data.user) {
+    if (data.ok && data.user.access_token) {
       // プレイリスト一覧を表示
-      this.setState({
-        playlists: await this.fetchPlayLists({ user: data.user }),
-        isFetching: false,
-        isLoaded: true,
-      });
+      const playlists = await fetchPlayLists({ user: data.user });
+      setPlaylists(playlists);
+      setIsFetching(false);
+      setIsLoaded(true);
       // Firestoreに未登録の場合
     } else if (window.location.search) {
       // パラメータのauthorization-codeでプレイリスト一覧を表示
-      const code: string = getQueryObject().code;
-      const playlists = await this.fetchPlayLists({ code });
-      console.log(playlists);
-      this.setState({
-        playlists,
-        isFetching: false,
-        isLoaded: true,
-      });
+      const code: string = getQueryParametersForIE11().code;
+      const playlists = await fetchPlayLists({ code });
+      setPlaylists(playlists);
+      setIsFetching(false);
+      setIsLoaded(true);
     } else {
       // ログイン画面表示
-      this.props.history.push('/login');
+      props.history.push('/login');
     }
-  }
+  };
 
-  onChangeHour(hour: string) {
-    this.setState({ hour: hour });
-  }
+  const onChangePlaylist = (index: number) => {
+    setPlaylistUri(playlists[index].uri);
+    setTitle(playlists[index].name);
+  };
 
-  onChangeMinute(minute: string) {
-    this.setState({ minute: minute });
-  }
-
-  onChangePlaylist(index: number) {
-    this.setState({ playlistUri: this.state.playlists[index].uri });
-    this.changeTitle(index);
-  }
-
-  changeTitle(index: number) {
-    this.setState({
-      title: this.state.playlists[index].name,
-    });
-  }
-
-  async setScheduler() {
-    this.setState({
-      isFetching: true,
-    });
+  const setScheduler = async () => {
+    setIsFetching(true);
     const data = {
-      hour: this.state.hour,
-      minute: this.state.minute,
-      playlistUri: this.state.playlistUri,
+      hour,
+      minute,
+      playlistUri,
     };
     const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
-    const res = await scheduleAlarm(data).catch((error) => false);
-    console.log(res);
-    this.showComplete();
-  }
+    await scheduleAlarm(data).catch((error) => {
+      alert(error);
+    });
+    setCompleteVisible(true);
+  };
 
-  async fetchPlayLists({ user = null, code = '' }) {
+  const fetchPlayLists = async ({ user = null, code = '' }) => {
     const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
     const { data } = await getPlaylists({ user, code });
     return data.ok && data.playlists.items
       ? orderBy(data.playlists.items, ['name'], ['asc'])
       : [];
-  }
+  };
 
-  showComplete() {
+  const showComplete = () => {
+    const $loader = loader.current;
+    const $complete = complete.current;
     const timeline = anime.timeline();
     // ローディング消す
     timeline.add({
-      targets: [this.$loader],
+      targets: [$loader],
       scale: {
         value: [1, 0],
         duration: 200,
         easing: 'easeOutQuart',
       },
       complete: () => {
-        if (this.$complete) this.$complete.style.display = 'block';
+        anime.set($complete, {
+          display: 'block',
+        });
       },
     });
     // チェックマーク出す
     timeline.add({
-      targets: [this.$complete],
+      targets: [$complete],
       scale: {
         value: [0, 1],
         duration: 300,
@@ -142,7 +120,7 @@ class Main extends React.Component<Props, State> {
     });
     // チェックマーク消す
     timeline.add({
-      targets: [this.$complete],
+      targets: [$complete],
       scale: {
         value: [1, 0],
         duration: 200,
@@ -150,43 +128,41 @@ class Main extends React.Component<Props, State> {
         easing: 'easeOutQuart',
       },
       complete: () => {
-        if (this.$loader) this.$loader.style.transform = '';
-        if (this.$complete) this.$complete.style.display = 'none';
-        this.setState({
-          isFetching: false,
+        anime.set($complete, {
+          display: 'none',
         });
+        setIsFetching(false);
+        setCompleteVisible(false);
       },
     });
-  }
+  };
 
-  render() {
-    return (
-      <div className="Main">
-        <Timer
-          onChangeHour={this.onChangeHour.bind(this)}
-          onChangeMinute={this.onChangeMinute.bind(this)}
-        />
-        <Title>{this.state.title}</Title>
-        {this.state.isLoaded && (
-          <Playlists
-            playlists={this.state.playlists}
-            onChangePlaylist={this.onChangePlaylist.bind(this)}
-          />
-        )}
-        <SetButton onClick={this.setScheduler.bind(this)}>SET ALARM</SetButton>
-        <Loading
-          className="Loading"
-          style={{ display: this.state.isFetching ? 'block' : 'none' }}
-        >
-          <Loader className="loader" ref={($el) => (this.$loader = $el)} />
-          <Complete ref={($el) => (this.$complete = $el)}>
+  return (
+    <div className="Main">
+      <Timer
+        onChangeHour={(hour: string) => {
+          setHour(hour);
+        }}
+        onChangeMinute={(minute: string) => {
+          setMinute(minute);
+        }}
+      />
+      <Title>{title}</Title>
+      {isLoaded && (
+        <Playlists playlists={playlists} onChangePlaylist={onChangePlaylist} />
+      )}
+      <SetButton onClick={setScheduler}>SET ALARM</SetButton>
+      {isFetching && (
+        <Loading className="Loading">
+          <Loader ref={loader} className="loader" />
+          <Complete ref={complete}>
             <img src={check} alt="check" />
           </Complete>
         </Loading>
-      </div>
-    );
-  }
-}
+      )}
+    </div>
+  );
+};
 
 export default withRouter(Main);
 

@@ -36,7 +36,6 @@ export interface SetSchedulerParam {
 export interface PlaySpotifyParam {
   accessToken: string;
   playlistUri: string;
-  deviceId: string;
 }
 
 export interface GetSpotifyAccessTokenParam {

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import initializeFirebaseApp from './functions/initializeFirebaseApp';
+import initializeFirebaseApp from './util/functions/initializeFirebaseApp';
 
 initializeFirebaseApp();
 ReactDOM.render(<App />, document.getElementById('root'));

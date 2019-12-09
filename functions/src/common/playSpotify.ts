@@ -1,7 +1,6 @@
 import { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
-import createURLSearchParams from '../util/functions/createURLSearchParams';
 import { PlaySpotifyParam } from '../../../types';
 
 /**
@@ -11,12 +10,8 @@ import { PlaySpotifyParam } from '../../../types';
  * @throws Error
  */
 const playSpotify = async (param: PlaySpotifyParam): Promise<any> => {
-  const { accessToken, playlistUri, deviceId } = param;
-  const uri = deviceId
-    ? `${CONFIG.SPOTIFY_API.PUT_PLAY}?${createURLSearchParams({
-        device_id: deviceId,
-      }).toString()}`
-    : CONFIG.SPOTIFY_API.PUT_PLAY;
+  const { accessToken, playlistUri } = param;
+  const uri = CONFIG.SPOTIFY_API.PUT_PLAY;
   const fetchOptions: RequestInit = {
     method: 'PUT',
     headers: {

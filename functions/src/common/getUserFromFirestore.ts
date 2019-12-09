@@ -26,13 +26,11 @@ const getUserFromFirestore = (client: any): Promise<User> => {
             access_token,
             refresh_token,
             playlistUri,
-            deviceId,
           } = response.data.fields;
           const user: User = {
             access_token: access_token.stringValue,
             refresh_token: refresh_token.stringValue,
             playlistUri: playlistUri.stringValue,
-            deviceId: deviceId.stringValue,
           };
           resolve(user);
         }

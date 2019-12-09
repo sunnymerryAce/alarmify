@@ -1,6 +1,6 @@
 import { UpdateUserParam } from '../../../types';
 import CONFIG from '../util/CONFIG';
-import { google } from 'googleapis';
+import { google, firestore_v1beta1 } from 'googleapis';
 const firestore = google.firestore('v1beta1');
 
 const createRequestBody = (param: UpdateUserParam): Object => {
@@ -39,21 +39,22 @@ const updateUser = (param: UpdateUserParam): Promise<any> => {
   Object.entries(requestBody.fields).forEach(([key, value]) => {
     fieldPaths.push(key);
   });
-  const patchParam = {
+  const patchParam: firestore_v1beta1.Params$Resource$Projects$Databases$Documents$Patch = {
     auth: param.client,
     name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/users/${CONFIG.USER_NAME}`,
-    updateMask: {
-      fieldPaths,
-    },
+    'updateMask.fieldPaths': fieldPaths,
     requestBody: createRequestBody(param),
   };
-  const castedParam = <any>patchParam;
 
   return new Promise((resolve, reject) => {
     firestore.projects.databases.documents.patch(
-      castedParam,
-      (error: any, response: any) => {
-        error ? reject(error) : resolve(response.data);
+      patchParam,
+      (error: any, response: any): void => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response.data);
+        }
       },
     );
   });

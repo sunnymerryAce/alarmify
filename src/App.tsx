@@ -1,11 +1,12 @@
 import React from 'react';
+
 import 'modern-normalize/modern-normalize.css';
 import 'swiper/dist/css/swiper.min.css';
 import './App.css';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Login from './components/Login/Login';
-import Main from './components/Main/Main';
+import Login from './pages/Login';
+import Main from './pages/Main';
 
 const App: React.FC = () => {
   return (
@@ -13,7 +14,7 @@ const App: React.FC = () => {
       <Router>
         <div>
           <Route exact path="/" component={Main} />
-          <Route path="/login" component={Login} />
+          <Route exact path="/login" component={Login} />
         </div>
       </Router>
     </div>
