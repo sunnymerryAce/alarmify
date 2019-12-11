@@ -1,6 +1,9 @@
 import anime from 'animejs';
-import firebase from 'firebase';
-import 'firebase/functions';
+import {
+  getUserFromFirestore,
+  getPlaylists,
+  scheduleAlarm,
+} from '../../plugins/firebase';
 import { orderBy } from 'lodash-es';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -18,14 +21,13 @@ const Main: React.FC<Props> = (props) => {
   const [hour, setHour] = useState<string>('0');
   const [minute, setMinute] = useState<string>('0');
   const [playlists, setPlaylists] = useState<Array<any>>([]);
-  const [playlistUri, setPlaylistUri] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [completeVisible, setCompleteVisible] = useState<boolean>(false);
 
-  const loader = useRef(document.createElement('div'));
-  const complete = useRef(document.createElement('div'));
+  const loader = useRef<HTMLDivElement>(null);
+  const complete = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     initialize();
@@ -39,56 +41,47 @@ const Main: React.FC<Props> = (props) => {
 
   const initialize = async () => {
     // Firestoreの情報を参照
-    const getUserFromFirestore = firebase
-      .functions()
-      .httpsCallable('getUserFromFirestore');
     const { data } = await getUserFromFirestore();
     // Firestoreに登録済みの場合
     if (data.ok && data.user.access_token) {
       // プレイリスト一覧を表示
       const playlists = await fetchPlayLists({ user: data.user });
       setPlaylists(playlists);
-      setIsFetching(false);
-      setIsLoaded(true);
+      setLoadingVisible(false);
+      setIsInitialized(true);
       // Firestoreに未登録の場合
     } else if (window.location.search) {
       // パラメータのauthorization-codeでプレイリスト一覧を表示
       const code: string = getQueryParametersForIE11().code;
       const playlists = await fetchPlayLists({ code });
       setPlaylists(playlists);
-      setIsFetching(false);
-      setIsLoaded(true);
+      setLoadingVisible(false);
+      setIsInitialized(true);
     } else {
       // ログイン画面表示
       props.history.push('/login');
     }
   };
 
-  const onChangePlaylist = (index: number) => {
-    setPlaylistUri(playlists[index].uri);
-    setTitle(playlists[index].name);
-  };
-
-  const setScheduler = async () => {
-    setIsFetching(true);
-    const data = {
-      hour,
-      minute,
-      playlistUri,
-    };
-    const scheduleAlarm = firebase.functions().httpsCallable('scheduleAlarm');
-    await scheduleAlarm(data).catch((error) => {
-      alert(error);
-    });
-    setCompleteVisible(true);
-  };
-
   const fetchPlayLists = async ({ user = null, code = '' }) => {
-    const getPlaylists = firebase.functions().httpsCallable('getPlaylists');
     const { data } = await getPlaylists({ user, code });
     return data.ok && data.playlists.items
       ? orderBy(data.playlists.items, ['name'], ['asc'])
       : [];
+  };
+
+  const setScheduler = async () => {
+    // ローディング表示
+    setLoadingVisible(true);
+    await scheduleAlarm({
+      hour,
+      minute,
+      playlistUri: playlists[currentIndex].uri,
+    }).catch((error) => {
+      alert(error);
+    });
+    // チェックマークのアニメーション開始
+    setCompleteVisible(true);
   };
 
   const showComplete = () => {
@@ -104,9 +97,11 @@ const Main: React.FC<Props> = (props) => {
         easing: 'easeOutQuart',
       },
       complete: () => {
-        anime.set($complete, {
-          display: 'block',
-        });
+        if ($complete) {
+          anime.set($complete, {
+            display: 'block',
+          });
+        }
       },
     });
     // チェックマーク出す
@@ -128,10 +123,12 @@ const Main: React.FC<Props> = (props) => {
         easing: 'easeOutQuart',
       },
       complete: () => {
-        anime.set($complete, {
-          display: 'none',
-        });
-        setIsFetching(false);
+        if ($complete) {
+          anime.set($complete, {
+            display: 'none',
+          });
+        }
+        setLoadingVisible(false);
         setCompleteVisible(false);
       },
     });
@@ -147,12 +144,17 @@ const Main: React.FC<Props> = (props) => {
           setMinute(minute);
         }}
       />
-      <Title>{title}</Title>
-      {isLoaded && (
-        <Playlists playlists={playlists} onChangePlaylist={onChangePlaylist} />
+      <Title>{playlists.length ? playlists[currentIndex].name : ''}</Title>
+      {isInitialized && (
+        <Playlists
+          playlists={playlists}
+          onChangePlaylist={(index: number) => {
+            setCurrentIndex(index);
+          }}
+        />
       )}
       <SetButton onClick={setScheduler}>SET ALARM</SetButton>
-      {isFetching && (
+      {loadingVisible && (
         <Loading className="Loading">
           <Loader ref={loader} className="loader" />
           <Complete ref={complete}>
