@@ -1,7 +1,7 @@
 import React from 'react';
 
 import 'modern-normalize/modern-normalize.css';
-import 'swiper/dist/css/swiper.min.css';
+import 'swiper/css/swiper.min.css';
 import './App.css';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
