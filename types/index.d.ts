@@ -4,10 +4,6 @@ import {
   UserRefreshClient,
 } from '../functions/node_modules/google-auth-library';
 
-declare module '*.png';
-declare module '*.png';
-declare module '*.jpg';
-
 /**
  * user information registered in Firestore
  */

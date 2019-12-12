@@ -1,27 +1,26 @@
+import React, { useState, useRef, useEffect } from 'react';
+import styled from 'styled-components';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import anime from 'animejs';
+import { orderBy } from 'lodash-es';
 import {
   getUserFromFirestore,
   getPlaylists,
   scheduleAlarm,
 } from '../../plugins/firebase';
-import { orderBy } from 'lodash-es';
 
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
 import getQueryParametersForIE11 from '../../util/functions/getQueryParametersForIE11';
+import check from '../../images/baseline-check_circle_outline-24px.svg';
 
 interface Props extends RouteComponentProps {}
 
-const check = require('../../images/baseline-check_circle_outline-24px.svg');
-
 const Main: React.FC<Props> = (props) => {
+  const [playlists, setPlaylists] = useState<Array<any>>([]);
   const [hour, setHour] = useState<string>('0');
   const [minute, setMinute] = useState<string>('0');
-  const [playlists, setPlaylists] = useState<Array<any>>([]);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [playlistUri, setPlaylistUri] = useState<string>('');
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [completeVisible, setCompleteVisible] = useState<boolean>(false);
@@ -76,7 +75,7 @@ const Main: React.FC<Props> = (props) => {
     await scheduleAlarm({
       hour,
       minute,
-      playlistUri: playlists[currentIndex].uri,
+      playlistUri,
     }).catch((error) => {
       alert(error);
     });
@@ -136,22 +135,9 @@ const Main: React.FC<Props> = (props) => {
 
   return (
     <div className="Main">
-      <Timer
-        onChangeHour={(hour: string) => {
-          setHour(hour);
-        }}
-        onChangeMinute={(minute: string) => {
-          setMinute(minute);
-        }}
-      />
-      <Title>{playlists.length ? playlists[currentIndex].name : ''}</Title>
+      <Timer setHour={setHour} setMinute={setMinute} />
       {isInitialized && (
-        <Playlists
-          playlists={playlists}
-          onChangePlaylist={(index: number) => {
-            setCurrentIndex(index);
-          }}
-        />
+        <Playlists playlists={playlists} setPlaylistUri={setPlaylistUri} />
       )}
       <SetButton onClick={setScheduler}>SET ALARM</SetButton>
       {loadingVisible && (
@@ -253,12 +239,7 @@ const Loader = styled.div`
     }
   }
 `;
-const Title = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  letter-spacing: 0;
-  padding-bottom: 2vh;
-`;
+
 const SetButton = styled.div`
   background-color: #1db954;
   font-size: 20px;
