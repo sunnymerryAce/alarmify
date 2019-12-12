@@ -2,22 +2,39 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import toggleScrollEvent from '../../util/functions/toggleScrollEvent';
 
 interface Props {
-  onChangeHour: Function;
-  onChangeMinute: Function;
+  setHour: React.Dispatch<React.SetStateAction<string>>;
+  setMinute: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Timer: React.FC<Props> = (props) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const handleDateChange = (date: any) => {
+  const onChange = (date: MaterialUiPickersDate) => {
+    setDate(date as Date);
+  };
+
+  const onOpen = () => {
+    toggleScrollEvent(true);
+  };
+  const onClose = () => {
+    toggleScrollEvent(false);
+    setTimeout(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    }, 200);
+  };
+
+  const setDate = (date: Date) => {
     setSelectedDate(date);
-    props.onChangeHour(date.getHours());
-    props.onChangeMinute(date.getMinutes());
+    props.setHour(date.getHours().toString());
+    props.setMinute(date.getMinutes().toString());
   };
 
   return (
@@ -26,18 +43,9 @@ const Timer: React.FC<Props> = (props) => {
         <ThemeProvider theme={defaultMaterialTheme}>
           <TimePicker
             value={selectedDate}
-            onChange={handleDateChange}
-            onOpen={() => {
-              toggleScrollEvent(true);
-            }}
-            onClose={() => {
-              toggleScrollEvent(false);
-              setTimeout(() => {
-                if (document.activeElement instanceof HTMLElement) {
-                  document.activeElement.blur();
-                }
-              }, 200);
-            }}
+            onChange={onChange}
+            onOpen={onOpen}
+            onClose={onClose}
           />
         </ThemeProvider>
       </MuiPickersUtilsProvider>

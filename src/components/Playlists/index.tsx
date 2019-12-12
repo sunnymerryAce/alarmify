@@ -1,16 +1,61 @@
-import Swiper from 'swiper';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Swiper from 'swiper';
 
 interface Props {
-  onChangePlaylist(index: number): void;
   playlists: Array<any>;
+  setPlaylistUri: React.Dispatch<React.SetStateAction<string>>;
 }
 
-/**
- * Coverflowを生成する
- * @returns Swiper Object
- */
+const Playlists: React.FC<Props> = (props) => {
+  const [coverFlow, setCoverFlow] = useState<Swiper>();
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  // スライダーレンダリング後
+  useEffect(() => {
+    if (!coverFlow) return;
+    setCurrentPlaylist(coverFlow.activeIndex);
+    coverFlow.on('slideChange', () => {
+      setCurrentPlaylist(coverFlow.activeIndex);
+    });
+  }, [coverFlow]);
+
+  const initialize = (): void => {
+    setCoverFlow(createCoverFlow());
+  };
+
+  const setCurrentPlaylist = (index: number): void => {
+    props.setPlaylistUri(props.playlists[index]);
+    setCurrentIndex(index);
+  };
+
+  return (
+    <>
+      <Title>{props.playlists[currentIndex].name}</Title>
+      <div className="swiper-container">
+        <CoverFlow className="swiper-wrapper">
+          {props.playlists.map((item, key) => {
+            return (
+              <CoverFlowItem key={key} className="swiper-slide">
+                <img
+                  src={item.images.length ? item.images[0].url : ''}
+                  alt=""
+                />
+              </CoverFlowItem>
+            );
+          })}
+        </CoverFlow>
+      </div>
+    </>
+  );
+};
+
+export default Playlists;
+
 const createCoverFlow = (): Swiper => {
   return new Swiper('.swiper-container', {
     effect: 'coverflow',
@@ -29,39 +74,17 @@ const createCoverFlow = (): Swiper => {
   });
 };
 
-const Playlists: React.FC<Props> = (props) => {
-  useEffect(() => {
-    const coverFlow = createCoverFlow();
-    if (coverFlow) {
-      props.onChangePlaylist(coverFlow.activeIndex);
-      coverFlow.on('slideChange', () => {
-        props.onChangePlaylist(coverFlow.activeIndex);
-      });
-    }
-  }, []);
-
-  return (
-    <div className="swiper-container">
-      <Playlist className="swiper-wrapper">
-        {props.playlists.map((item, key) => {
-          return (
-            <PlaylistItem key={key} className="swiper-slide">
-              <img src={item.images.length ? item.images[0].url : ''} alt="" />
-            </PlaylistItem>
-          );
-        })}
-      </Playlist>
-    </div>
-  );
-};
-
-export default Playlists;
-
-const Playlist = styled.ul`
+const Title = styled.div`
+  font-size: 25px;
+  font-weight: bold;
+  letter-spacing: 0;
+  padding-bottom: 2vh;
+`;
+const CoverFlow = styled.ul`
   list-style: none;
   padding: 0;
 `;
-const PlaylistItem = styled.li`
+const CoverFlowItem = styled.li`
   width: 50%;
   background: transparent;
   img {
