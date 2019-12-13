@@ -19,18 +19,22 @@ const Playlists: React.FC<Props> = (props) => {
   useEffect(() => {
     if (!coverFlow) return;
     setCurrentPlaylist(coverFlow.activeIndex);
-    coverFlow.on('slideChange', () => {
-      setCurrentPlaylist(coverFlow.activeIndex);
-    });
+    addCoverFlowEvent(coverFlow);
   }, [coverFlow]);
 
   const initialize = (): void => {
     setCoverFlow(createCoverFlow());
   };
 
+  const addCoverFlowEvent = (coverFlow: Swiper): void => {
+    coverFlow.on('slideChange', () => {
+      setCurrentPlaylist(coverFlow.activeIndex);
+    });
+  };
+
   const setCurrentPlaylist = (index: number): void => {
-    props.setPlaylistUri(props.playlists[index]);
     setCurrentIndex(index);
+    props.setPlaylistUri(props.playlists[index]);
   };
 
   return (

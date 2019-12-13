@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -14,22 +14,11 @@ interface Props {
 
 const Timer: React.FC<Props> = (props) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [visible, setVisible] = useState<boolean>(false);
 
-  const onChange = (date: MaterialUiPickersDate) => {
-    setDate(date as Date);
-  };
-
-  const onOpen = () => {
-    toggleScrollEvent(true);
-  };
-  const onClose = () => {
-    toggleScrollEvent(false);
-    setTimeout(() => {
-      if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-      }
-    }, 200);
-  };
+  useEffect(() => {
+    toggleScrollEvent(visible);
+  }, [visible]);
 
   const setDate = (date: Date) => {
     setSelectedDate(date);
@@ -43,9 +32,15 @@ const Timer: React.FC<Props> = (props) => {
         <ThemeProvider theme={defaultMaterialTheme}>
           <TimePicker
             value={selectedDate}
-            onChange={onChange}
-            onOpen={onOpen}
-            onClose={onClose}
+            onChange={(date: MaterialUiPickersDate) => {
+              setDate(date as Date);
+            }}
+            onOpen={() => {
+              setVisible(true);
+            }}
+            onClose={() => {
+              setVisible(false);
+            }}
           />
         </ThemeProvider>
       </MuiPickersUtilsProvider>

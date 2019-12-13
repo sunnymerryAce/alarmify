@@ -8,11 +8,11 @@ import {
   getPlaylists,
   scheduleAlarm,
 } from '../../plugins/firebase';
-
 import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
 import getQueryParametersForIE11 from '../../util/functions/getQueryParametersForIE11';
 import check from '../../images/baseline-check_circle_outline-24px.svg';
+import { User } from '../../../types';
 
 interface Props extends RouteComponentProps {}
 
@@ -22,8 +22,10 @@ const Main: React.FC<Props> = (props) => {
   const [minute, setMinute] = useState<string>('0');
   const [playlistUri, setPlaylistUri] = useState<string>('');
   const [loadingVisible, setLoadingVisible] = useState<boolean>(true);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [completeVisible, setCompleteVisible] = useState<boolean>(false);
+  const [playlistsVisible, setPlaylistsVisible] = useState<boolean>(false);
+  const [completeDialogVisible, setCompleteDialogVisible] = useState<boolean>(
+    false,
+  );
 
   const loader = useRef<HTMLDivElement>(null);
   const complete = useRef<HTMLDivElement>(null);
@@ -33,110 +35,141 @@ const Main: React.FC<Props> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (completeVisible) {
-      showComplete();
+    if (completeDialogVisible) {
+      showAndHideCompleteDialog();
     }
-  }, [completeVisible]);
+  }, [completeDialogVisible]);
 
   const initialize = async () => {
-    // Firestoreの情報を参照
-    const { data } = await getUserFromFirestore();
-    // Firestoreに登録済みの場合
-    if (data.ok && data.user.access_token) {
-      // プレイリスト一覧を表示
-      const playlists = await fetchPlayLists({ user: data.user });
-      setPlaylists(playlists);
-      setLoadingVisible(false);
-      setIsInitialized(true);
-      // Firestoreに未登録の場合
-    } else if (window.location.search) {
-      // パラメータのauthorization-codeでプレイリスト一覧を表示
-      const code: string = getQueryParametersForIE11().code;
-      const playlists = await fetchPlayLists({ code });
-      setPlaylists(playlists);
-      setLoadingVisible(false);
-      setIsInitialized(true);
+    const user = await retrieveUser();
+    const hasParameter = window.location.search;
+    if (!(user || hasParameter)) {
+      goToLoginPage();
     } else {
-      // ログイン画面表示
-      props.history.push('/login');
+      const playlists: Array<any> = await fetchPlayLists({
+        user,
+        // 初回ログイン時、authorization codeでfetch
+        code: user ? getQueryParametersForIE11().code : '',
+      });
+      setPlaylists(playlists);
+      showPlayLists();
+      hideLoading();
     }
   };
 
-  const fetchPlayLists = async ({ user = null, code = '' }) => {
-    const { data } = await getPlaylists({ user, code });
+  const showPlayLists = () => {
+    setPlaylistsVisible(true);
+  };
+
+  const hideLoading = () => {
+    setLoadingVisible(false);
+  };
+
+  const showLoading = () => {
+    setLoadingVisible(true);
+  };
+
+  const showCompleteDialog = () => {
+    setCompleteDialogVisible(true);
+  };
+
+  const showAndHideCompleteDialog = async () => {
+    await completeDialogAnimation();
+    hideLoading();
+    setCompleteDialogVisible(false);
+  };
+
+  interface FetchPlayListsParam {
+    user?: User;
+    code?: string;
+  }
+  const fetchPlayLists = async (
+    param: FetchPlayListsParam,
+  ): Promise<Array<any>> => {
+    const { user, code } = param;
+    const { data } = await getPlaylists({
+      user,
+      code,
+    }).catch(() => {
+      return { data: {} };
+    });
     return data.ok && data.playlists.items
       ? orderBy(data.playlists.items, ['name'], ['asc'])
       : [];
   };
 
   const setScheduler = async () => {
-    // ローディング表示
-    setLoadingVisible(true);
+    showLoading();
     await scheduleAlarm({
       hour,
       minute,
       playlistUri,
     }).catch((error) => {
       alert(error);
+      hideLoading();
     });
-    // チェックマークのアニメーション開始
-    setCompleteVisible(true);
+    showCompleteDialog();
   };
 
-  const showComplete = () => {
-    const $loader = loader.current;
-    const $complete = complete.current;
-    const timeline = anime.timeline();
-    // ローディング消す
-    timeline.add({
-      targets: [$loader],
-      scale: {
-        value: [1, 0],
-        duration: 200,
-        easing: 'easeOutQuart',
-      },
-      complete: () => {
-        if ($complete) {
-          anime.set($complete, {
-            display: 'block',
-          });
-        }
-      },
+  const completeDialogAnimation = () => {
+    return new Promise((resolve) => {
+      const $loader = loader.current;
+      const $complete = complete.current;
+      const timeline = anime.timeline();
+      // shrink loading
+      timeline.add({
+        targets: [$loader],
+        scale: {
+          value: [1, 0],
+          duration: 200,
+          easing: 'easeOutQuart',
+        },
+        complete: () => {
+          if ($complete) {
+            anime.set($complete, {
+              display: 'block',
+            });
+          }
+        },
+      });
+      // popup check mark
+      timeline.add({
+        targets: [$complete],
+        scale: {
+          value: [0, 1],
+          duration: 300,
+          easing: 'cubicBezier(.3,1.04,.86,1.47)',
+        },
+      });
+      // shrink check mark
+      timeline.add({
+        targets: [$complete],
+        scale: {
+          value: [1, 0],
+          duration: 200,
+          delay: 500,
+          easing: 'easeOutQuart',
+        },
+        complete: () => {
+          if ($complete) {
+            anime.set($complete, {
+              display: 'none',
+            });
+          }
+          resolve();
+        },
+      });
     });
-    // チェックマーク出す
-    timeline.add({
-      targets: [$complete],
-      scale: {
-        value: [0, 1],
-        duration: 300,
-        easing: 'cubicBezier(.3,1.04,.86,1.47)',
-      },
-    });
-    // チェックマーク消す
-    timeline.add({
-      targets: [$complete],
-      scale: {
-        value: [1, 0],
-        duration: 200,
-        delay: 500,
-        easing: 'easeOutQuart',
-      },
-      complete: () => {
-        if ($complete) {
-          anime.set($complete, {
-            display: 'none',
-          });
-        }
-        setLoadingVisible(false);
-        setCompleteVisible(false);
-      },
-    });
+  };
+
+  const goToLoginPage = () => {
+    props.history.push('/login');
   };
 
   return (
     <div className="Main">
       <Timer setHour={setHour} setMinute={setMinute} />
-      {isInitialized && (
+      {playlistsVisible && (
         <Playlists playlists={playlists} setPlaylistUri={setPlaylistUri} />
       )}
       <SetButton onClick={setScheduler}>SET ALARM</SetButton>
@@ -153,6 +186,14 @@ const Main: React.FC<Props> = (props) => {
 };
 
 export default withRouter(Main);
+
+const retrieveUser = async (): Promise<User | undefined> => {
+  const { data } = await getUserFromFirestore().catch(() => {
+    return { data: {} };
+  });
+  const hasRegistered = data.ok && data.user.access_token;
+  return hasRegistered ? data.user : undefined;
+};
 
 const Loading = styled.div`
   position: fixed;

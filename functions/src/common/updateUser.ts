@@ -10,13 +10,11 @@ const createRequestBody = (param: UpdateUserParam): Object => {
   const { user } = param;
   const access_token =
     user && user.access_token ? user.access_token : param.access_token;
-  console.log(access_token);
   if (access_token) {
     requestBody.fields.access_token = { stringValue: access_token };
   }
   const refresh_token =
     user && user.refresh_token ? user.refresh_token : param.refresh_token;
-  console.log(refresh_token);
   if (refresh_token) {
     requestBody.fields.refresh_token = { stringValue: refresh_token };
   }
@@ -25,7 +23,6 @@ const createRequestBody = (param: UpdateUserParam): Object => {
   if (playlistUri) {
     requestBody.fields.playlistUri = { stringValue: playlistUri };
   }
-  console.log(requestBody);
   return requestBody;
 };
 
