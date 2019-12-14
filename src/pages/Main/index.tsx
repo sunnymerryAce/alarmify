@@ -12,7 +12,26 @@ import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
 import getQueryParametersForIE11 from '../../util/functions/getQueryParametersForIE11';
 import check from '../../images/baseline-check_circle_outline-24px.svg';
-import { User } from '../../../types';
+import { User, GetPlayListsParam } from '../../../types';
+
+const retrieveUser = async (): Promise<User | undefined> => {
+  const { data } = await getUserFromFirestore().catch(() => {
+    return { data: {} };
+  });
+  const hasRegistered = data.ok && data.user.access_token;
+  return hasRegistered ? data.user : undefined;
+};
+
+const fetchPlayLists = async (
+  param: GetPlayListsParam,
+): Promise<Array<any>> => {
+  const { data } = await getPlaylists(param).catch(() => {
+    return { data: {} };
+  });
+  return data.ok && data.playlists.items
+    ? orderBy(data.playlists.items, ['name'], ['asc'])
+    : [];
+};
 
 interface Props extends RouteComponentProps {}
 
@@ -26,7 +45,6 @@ const Main: React.FC<Props> = (props) => {
   const [completeDialogVisible, setCompleteDialogVisible] = useState<boolean>(
     false,
   );
-
   const loader = useRef<HTMLDivElement>(null);
   const complete = useRef<HTMLDivElement>(null);
 
@@ -36,82 +54,47 @@ const Main: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (completeDialogVisible) {
-      showAndHideCompleteDialog();
+      animateCompleteDialog();
     }
   }, [completeDialogVisible]);
 
   const initialize = async () => {
     const user = await retrieveUser();
-    const hasParameter = window.location.search;
-    if (!(user || hasParameter)) {
-      goToLoginPage();
-    } else {
+    const isLoggedInSpotify = user || window.location.search;
+    if (isLoggedInSpotify) {
       const playlists: Array<any> = await fetchPlayLists({
         user,
         // 初回ログイン時、authorization codeでfetch
-        code: user ? getQueryParametersForIE11().code : '',
+        code: user ? '' : getQueryParametersForIE11().code,
       });
       setPlaylists(playlists);
-      showPlayLists();
-      hideLoading();
+      setPlaylistsVisible(true);
+      setLoadingVisible(false);
+    } else {
+      goToLoginPage();
     }
   };
 
-  const showPlayLists = () => {
-    setPlaylistsVisible(true);
-  };
-
-  const hideLoading = () => {
+  const animateCompleteDialog = async () => {
+    await startCompleteDialogAnimation();
     setLoadingVisible(false);
-  };
-
-  const showLoading = () => {
-    setLoadingVisible(true);
-  };
-
-  const showCompleteDialog = () => {
-    setCompleteDialogVisible(true);
-  };
-
-  const showAndHideCompleteDialog = async () => {
-    await completeDialogAnimation();
-    hideLoading();
     setCompleteDialogVisible(false);
   };
 
-  interface FetchPlayListsParam {
-    user?: User;
-    code?: string;
-  }
-  const fetchPlayLists = async (
-    param: FetchPlayListsParam,
-  ): Promise<Array<any>> => {
-    const { user, code } = param;
-    const { data } = await getPlaylists({
-      user,
-      code,
-    }).catch(() => {
-      return { data: {} };
-    });
-    return data.ok && data.playlists.items
-      ? orderBy(data.playlists.items, ['name'], ['asc'])
-      : [];
-  };
-
   const setScheduler = async () => {
-    showLoading();
+    setLoadingVisible(true);
     await scheduleAlarm({
       hour,
       minute,
       playlistUri,
     }).catch((error) => {
       alert(error);
-      hideLoading();
+      setLoadingVisible(false);
     });
-    showCompleteDialog();
+    setCompleteDialogVisible(true);
   };
 
-  const completeDialogAnimation = () => {
+  const startCompleteDialogAnimation = (): Promise<void> => {
     return new Promise((resolve) => {
       const $loader = loader.current;
       const $complete = complete.current;
@@ -186,14 +169,6 @@ const Main: React.FC<Props> = (props) => {
 };
 
 export default withRouter(Main);
-
-const retrieveUser = async (): Promise<User | undefined> => {
-  const { data } = await getUserFromFirestore().catch(() => {
-    return { data: {} };
-  });
-  const hasRegistered = data.ok && data.user.access_token;
-  return hasRegistered ? data.user : undefined;
-};
 
 const Loading = styled.div`
   position: fixed;

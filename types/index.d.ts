@@ -39,3 +39,8 @@ export interface GetSpotifyAccessTokenParam {
   code?: string;
   refresh_token?: string;
 }
+
+export interface GetPlayListsParam {
+  user?: User;
+  code?: string;
+}
