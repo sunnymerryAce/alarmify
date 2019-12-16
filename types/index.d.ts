@@ -42,5 +42,5 @@ export interface GetSpotifyAccessTokenParam {
 
 export interface GetPlayListsParam {
   user?: User;
-  code?: string;
+  code: string | null;
 }

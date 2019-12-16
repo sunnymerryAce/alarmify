@@ -26,6 +26,24 @@ const Playlists: React.FC<Props> = (props) => {
     setCoverFlow(createCoverFlow());
   };
 
+  const createCoverFlow = (): Swiper => {
+    return new Swiper('.swiper-container', {
+      effect: 'coverflow',
+      grabCursor: true,
+      loop: false,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      coverflowEffect: {
+        rotate: 50,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: true,
+      },
+      speed: 500,
+    });
+  };
+
   const addCoverFlowEvent = (coverFlow: Swiper): void => {
     coverFlow.on('slideChange', () => {
       setCurrentPlaylist(coverFlow.activeIndex);
@@ -59,24 +77,6 @@ const Playlists: React.FC<Props> = (props) => {
 };
 
 export default Playlists;
-
-const createCoverFlow = (): Swiper => {
-  return new Swiper('.swiper-container', {
-    effect: 'coverflow',
-    grabCursor: true,
-    loop: false,
-    centeredSlides: true,
-    slidesPerView: 'auto',
-    coverflowEffect: {
-      rotate: 50,
-      stretch: 0,
-      depth: 100,
-      modifier: 1,
-      slideShadows: true,
-    },
-    speed: 500,
-  });
-};
 
 const Title = styled.div`
   font-size: 25px;

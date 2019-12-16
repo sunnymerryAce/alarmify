@@ -60,12 +60,14 @@ const Main: React.FC<Props> = (props) => {
 
   const initialize = async () => {
     const user = await retrieveUser();
-    const isLoggedInSpotify = user || window.location.search;
+    const isLoggedInSpotify = user || /code/.test(window.location.search);
     if (isLoggedInSpotify) {
       const playlists: Array<any> = await fetchPlayLists({
         user,
         // 初回ログイン時、authorization codeでfetch
-        code: user ? '' : getQueryParametersForIE11().code,
+        code: user
+          ? null
+          : new URL(window.location.href).searchParams.get('code'),
       });
       setPlaylists(playlists);
       setPlaylistsVisible(true);
@@ -92,6 +94,10 @@ const Main: React.FC<Props> = (props) => {
       setLoadingVisible(false);
     });
     setCompleteDialogVisible(true);
+  };
+
+  const goToLoginPage = () => {
+    props.history.push('/login');
   };
 
   const startCompleteDialogAnimation = (): Promise<void> => {
@@ -143,10 +149,6 @@ const Main: React.FC<Props> = (props) => {
         },
       });
     });
-  };
-
-  const goToLoginPage = () => {
-    props.history.push('/login');
   };
 
   return (
