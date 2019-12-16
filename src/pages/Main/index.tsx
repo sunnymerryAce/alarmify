@@ -10,7 +10,6 @@ import {
 } from '../../plugins/firebase';
 import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
-import getQueryParametersForIE11 from '../../util/functions/getQueryParametersForIE11';
 import check from '../../images/baseline-check_circle_outline-24px.svg';
 import { User, GetPlayListsParam } from '../../../types';
 
