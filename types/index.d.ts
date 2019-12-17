@@ -44,3 +44,12 @@ export interface GetPlayListsParam {
   user?: User;
   code: string | null;
 }
+
+export interface GetPlaylistsResponse
+  extends firebase.functions.HttpsCallableResult {
+  readonly data: {
+    ok: boolean;
+    playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
+    error?: string;
+  };
+}

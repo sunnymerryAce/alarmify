@@ -7,10 +7,10 @@ import CONFIG from '../CONFIG';
  * @param options
  * @returns Promise object represents result data
  */
-const fetchWithErrorHandling = (
+const fetchWithErrorHandling = <T>(
   url: string,
   options: RequestInit,
-): Promise<any> => {
+): Promise<T> => {
   return new Promise((resolve, reject) => {
     // fetchの結果を非同期で返す
     return (

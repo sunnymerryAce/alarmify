@@ -9,7 +9,9 @@ import createURLSearchParams from '../util/functions/createURLSearchParams';
  * @returns playlists object
  * @throws Error
  */
-const getUserPlaylists = async (accessToken: string): Promise<Object> => {
+const getUserPlaylists = async (
+  accessToken: string,
+): Promise<SpotifyApi.ListOfUsersPlaylistsResponse> => {
   const fetchOptions: RequestInit = {
     method: 'GET',
     headers: {
@@ -17,17 +19,18 @@ const getUserPlaylists = async (accessToken: string): Promise<Object> => {
     },
   };
   // Spotifyユーザ情報を取得
-  const userInfo = await fetchWithErrorHandling(
-    CONFIG.SPOTIFY_API.GET_USER_INFO,
-    fetchOptions,
-  );
+  const userInfo: SpotifyApi.CurrentUsersProfileResponse = await fetchWithErrorHandling<
+    SpotifyApi.CurrentUsersProfileResponse
+  >(CONFIG.SPOTIFY_API.GET_USER_INFO, fetchOptions);
   // プレイリストを取得
   const uri = `${CONFIG.SPOTIFY_API.GET_PLAYLIST(
     userInfo.id,
   )}?${createURLSearchParams({
     limit: 50,
   }).toString()}`;
-  const playlistInfo = await fetchWithErrorHandling(uri, fetchOptions);
+  const playlistInfo: SpotifyApi.ListOfUsersPlaylistsResponse = await fetchWithErrorHandling<
+    SpotifyApi.ListOfUsersPlaylistsResponse
+  >(uri, fetchOptions);
   return playlistInfo;
 };
 

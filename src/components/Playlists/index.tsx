@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Swiper from 'swiper';
 
 interface Props {
-  playlists: Array<any>;
+  playlists: Array<SpotifyApi.PlaylistObjectSimplified>;
   setPlaylistUri: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -52,7 +52,7 @@ const Playlists: React.FC<Props> = (props) => {
 
   const setCurrentPlaylist = (index: number): void => {
     setCurrentIndex(index);
-    props.setPlaylistUri(props.playlists[index]);
+    props.setPlaylistUri(props.playlists[index].uri);
   };
 
   return (

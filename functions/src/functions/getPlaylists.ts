@@ -18,21 +18,21 @@ module.exports = functions.https.onCall(async (data, context) => {
           code,
         })
       : user.access_token;
-    const playlists = await getUserPlaylists(accessToken).catch(
-      async (error) => {
-        // AccessTokenがexpiredの場合、新しいAccessTokenを取得する
-        if (error.message && CONFIG.REG_EXP.ERROR[401].test(error.message)) {
-          accessToken = await getNewSpotifyAccessToken(client, {
-            isRefresh: true,
-            refresh_token: user.refresh_token,
-          });
-          // リトライ
-          return await getUserPlaylists(accessToken);
-        } else {
-          throw error;
-        }
-      },
-    );
+    const playlists: SpotifyApi.ListOfUsersPlaylistsResponse = await getUserPlaylists(
+      accessToken,
+    ).catch(async (error) => {
+      // AccessTokenがexpiredの場合、新しいAccessTokenを取得する
+      if (error.message && CONFIG.REG_EXP.ERROR[401].test(error.message)) {
+        accessToken = await getNewSpotifyAccessToken(client, {
+          isRefresh: true,
+          refresh_token: user.refresh_token,
+        });
+        // リトライ
+        return await getUserPlaylists(accessToken);
+      } else {
+        throw error;
+      }
+    });
     return {
       ok: true,
       playlists,

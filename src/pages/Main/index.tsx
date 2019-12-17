@@ -11,7 +11,7 @@ import {
 import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
 import check from '../../images/baseline-check_circle_outline-24px.svg';
-import { User, GetPlayListsParam } from '../../../types';
+import { User, GetPlayListsParam, GetPlaylistsResponse } from '../../../types';
 
 const retrieveUser = async (): Promise<User | undefined> => {
   const { data } = await getUserFromFirestore().catch(() => {
@@ -23,12 +23,16 @@ const retrieveUser = async (): Promise<User | undefined> => {
 
 const fetchPlayLists = async (
   param: GetPlayListsParam,
-): Promise<Array<any>> => {
-  const { data } = await getPlaylists(param).catch(() => {
-    return { data: {} };
+): Promise<Array<SpotifyApi.PlaylistObjectSimplified>> => {
+  const response: GetPlaylistsResponse = await getPlaylists(param).catch(() => {
+    return {
+      data: {
+        ok: false,
+      },
+    };
   });
-  return data.ok && data.playlists.items
-    ? orderBy(data.playlists.items, ['name'], ['asc'])
+  return response.data.ok && response.data.playlists
+    ? orderBy(response.data.playlists.items, ['name'], ['asc'])
     : [];
 };
 
@@ -61,13 +65,15 @@ const Main: React.FC<Props> = (props) => {
     const user = await retrieveUser();
     const isLoggedInSpotify = user || /code/.test(window.location.search);
     if (isLoggedInSpotify) {
-      const playlists: Array<any> = await fetchPlayLists({
-        user,
-        // 初回ログイン時、authorization codeでfetch
-        code: user
-          ? null
-          : new URL(window.location.href).searchParams.get('code'),
-      });
+      const playlists: Array<SpotifyApi.PlaylistObjectSimplified> = await fetchPlayLists(
+        {
+          user,
+          // 初回ログイン時、authorization codeでfetch
+          code: user
+            ? null
+            : new URL(window.location.href).searchParams.get('code'),
+        },
+      );
       setPlaylists(playlists);
       setPlaylistsVisible(true);
       setLoadingVisible(false);
