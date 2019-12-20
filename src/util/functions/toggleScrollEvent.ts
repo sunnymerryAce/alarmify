@@ -1,4 +1,4 @@
-const cancelEvent = (e: Event): void => {
+const cancelEvent = (e: Event) => {
   e.preventDefault();
 };
 

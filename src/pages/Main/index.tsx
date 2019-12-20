@@ -1,45 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import styled from 'styled-components';
 import anime from 'animejs';
-import { orderBy } from 'lodash-es';
-import {
-  getUserFromFirestore,
-  getPlaylists,
-  scheduleAlarm,
-} from '../../plugins/firebase';
+import { scheduleAlarm } from '../../plugins/firebase';
+import retrieveUser from '../../plugins/firebase/retrieveUser';
+import fetchPlaylists from '../../plugins/firebase/fetchPlaylists';
 import Timer from '../../components/Timer';
 import Playlists from '../../components/Playlists';
 import check from '../../images/baseline-check_circle_outline-24px.svg';
-import { User, GetPlayListsParam, GetPlaylistsResponse } from '../../../types';
-
-const retrieveUser = async (): Promise<User | undefined> => {
-  const { data } = await getUserFromFirestore().catch(() => {
-    return { data: {} };
-  });
-  const hasRegistered = data.ok && data.user.access_token;
-  return hasRegistered ? data.user : undefined;
-};
-
-const fetchPlayLists = async (
-  param: GetPlayListsParam,
-): Promise<Array<SpotifyApi.PlaylistObjectSimplified>> => {
-  const response: GetPlaylistsResponse = await getPlaylists(param).catch(() => {
-    return {
-      data: {
-        ok: false,
-      },
-    };
-  });
-  return response.data.ok && response.data.playlists
-    ? orderBy(response.data.playlists.items, ['name'], ['asc'])
-    : [];
-};
 
 interface Props extends RouteComponentProps {}
 
 const Main: React.FC<Props> = (props) => {
-  const [playlists, setPlaylists] = useState<Array<any>>([]);
+  const [playlists, setPlaylists] = useState<
+    Array<SpotifyApi.PlaylistObjectSimplified>
+  >([]);
   const [hour, setHour] = useState<string>('0');
   const [minute, setMinute] = useState<string>('0');
   const [playlistUri, setPlaylistUri] = useState<string>('');
@@ -62,17 +37,20 @@ const Main: React.FC<Props> = (props) => {
   }, [completeDialogVisible]);
 
   const initialize = async () => {
-    const user = await retrieveUser();
-    const isLoggedInSpotify = user || /code/.test(window.location.search);
+    const user: User | null = await retrieveUser();
+    const isLoggedInSpotify: boolean = (user ||
+      /code/.test(window.location.search)) as boolean;
+
     if (isLoggedInSpotify) {
-      const playlists: Array<SpotifyApi.PlaylistObjectSimplified> = await fetchPlayLists(
-        {
-          user,
-          // 初回ログイン時、authorization codeでfetch
-          code: user
-            ? null
-            : new URL(window.location.href).searchParams.get('code'),
-        },
+      const param: Api.GetPlayListsParam = {
+        user,
+        // 初回ログイン時、authorization codeでfetch
+        code: user
+          ? null
+          : new URL(window.location.href).searchParams.get('code'),
+      };
+      const playlists: Array<SpotifyApi.PlaylistObjectSimplified> = await fetchPlaylists(
+        param,
       );
       setPlaylists(playlists);
       setPlaylistsVisible(true);
@@ -94,11 +72,14 @@ const Main: React.FC<Props> = (props) => {
       hour,
       minute,
       playlistUri,
-    }).catch((error) => {
-      alert(error);
-      setLoadingVisible(false);
-    });
-    setCompleteDialogVisible(true);
+    })
+      .then(() => {
+        setCompleteDialogVisible(true);
+      })
+      .catch((error) => {
+        setLoadingVisible(false);
+        alert(error);
+      });
   };
 
   const goToLoginPage = () => {

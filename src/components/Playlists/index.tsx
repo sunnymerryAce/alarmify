@@ -22,7 +22,7 @@ const Playlists: React.FC<Props> = (props) => {
     addCoverFlowEvent(coverFlow);
   }, [coverFlow]);
 
-  const initialize = (): void => {
+  const initialize = () => {
     setCoverFlow(createCoverFlow());
   };
 
@@ -44,13 +44,13 @@ const Playlists: React.FC<Props> = (props) => {
     });
   };
 
-  const addCoverFlowEvent = (coverFlow: Swiper): void => {
+  const addCoverFlowEvent = (coverFlow: Swiper) => {
     coverFlow.on('slideChange', () => {
       setCurrentPlaylist(coverFlow.activeIndex);
     });
   };
 
-  const setCurrentPlaylist = (index: number): void => {
+  const setCurrentPlaylist = (index: number) => {
     setCurrentIndex(index);
     props.setPlaylistUri(props.playlists[index].uri);
   };

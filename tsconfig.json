@@ -13,10 +13,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "typeRoots": [
-      "node_modules/@types", // デフォルトではここだけ読む 忘れず書き添える
-      "types" // ここを読むように追記
-    ],
+    "baseUrl": "./",
+    "typeRoots": ["node_modules/@types", "types"],
     "jsx": "react"
   },
   "include": ["src"]
