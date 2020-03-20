@@ -1,17 +1,15 @@
 import React from 'react';
-import { Button } from '@storybook/react/demo';
+import '../../../App.css';
 import Timer from './index';
 
-export default { title: 'Button' };
+export default {
+  title: 'Timer',
+  parameters: {
+    backgrounds: [
+      { name: 'default', value: '#000000', default: true },
+      { name: 'green', value: 'rgba(24, 92, 49, 1)' },
+    ],
+  },
+};
 
-export const withText = () => <Button>Hello Button</Button>;
-
-export const TimerP = () => <Timer setHour={() => {}} setMinute={() => {}} />;
-
-export const withEmoji = () => (
-  <Button>
-    <span role="img" aria-label="so cool">
-      😀 😎 👍 💯
-    </span>
-  </Button>
-);
+export const Default = () => <Timer setHour={() => {}} setMinute={() => {}} />;
