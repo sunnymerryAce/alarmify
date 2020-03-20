@@ -5,7 +5,7 @@ import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { createMuiTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import toggleScrollEvent from '../../util/functions/toggleScrollEvent';
+import toggleScrollEvent from '../../../util/functions/toggleScrollEvent';
 
 interface Props {
   setHour: React.Dispatch<React.SetStateAction<string>>;

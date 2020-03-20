@@ -1,28 +1,20 @@
 import React from 'react';
+import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import CONFIG from '../../util/CONFIG';
-import createURLSearchParamsFromObject from '../../util/functions/createURLSearchParamsFromObject';
-
-const redirectURL = (): string => {
-  const url = new URL('https://accounts.spotify.com/authorize');
-  const params = createURLSearchParamsFromObject({
-    response_type: 'code',
-    client_id: CONFIG.SPOTIFY_CLIENT_ID,
-    redirect_uri: CONFIG.REDIRECT_URI,
-    scope:
-      'user-read-private user-read-playback-state user-modify-playback-state playlist-read-collaborative',
-  });
-  url.search = params.toString();
-  return url.href;
-};
+import LoginButton from '../../components/molecules/LoginButton';
 
 const Login: React.FC = () => {
-  const href: string = redirectURL();
   return (
-    <div className="Login">
-      <a href={href}>LOGIN TO SPOTIFY</a>
-    </div>
+    <StyledLogin className="Login">
+      <LoginButton />
+    </StyledLogin>
   );
 };
 
 export default withRouter(Login);
+
+const StyledLogin = styled.div`
+  position: fixed;
+  top: 35vh;
+  width: 100vw;
+`;

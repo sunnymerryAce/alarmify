@@ -1,11 +1,3 @@
-declare interface User {
-  access_token: string;
-  deviceId?: string;
-  playlistUri: string;
-  refresh_token: string;
-  code?: string;
-}
-
 declare namespace Api {
   export interface GetUserFromFirestoreResponse
     extends firebase.functions.HttpsCallableResult {
@@ -54,3 +46,5 @@ declare namespace Api {
     };
   }
 }
+
+// export default Api;
