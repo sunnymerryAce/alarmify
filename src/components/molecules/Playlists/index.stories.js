@@ -1,8 +1,9 @@
 import React from 'react';
+import Playlists from './index';
+
 import 'modern-normalize/modern-normalize.css';
 import 'swiper/css/swiper.min.css';
 import '../../../App.css';
-import Playlists from './index';
 
 export default {
   title: 'Playlists',

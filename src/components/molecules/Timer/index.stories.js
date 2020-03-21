@@ -1,6 +1,9 @@
 import React from 'react';
-import '../../../App.css';
 import Timer from './index';
+
+import 'modern-normalize/modern-normalize.css';
+import 'swiper/css/swiper.min.css';
+import '../../../App.css';
 
 export default {
   title: 'Timer',

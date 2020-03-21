@@ -5,7 +5,7 @@ import retrieveUser from '../../../plugins/firebase/retrieveUser';
 import fetchPlaylists from '../../../plugins/firebase/fetchPlaylists';
 import Timer from '../../molecules/Timer';
 import Playlists from '../../molecules/Playlists';
-import Loading from '../../molecules/Loading';
+import Processing from '../../molecules/Processing';
 import Button from '../../atoms/Button';
 
 const isLoggedInSpotify = (): boolean => {
@@ -99,7 +99,7 @@ const Alarm: React.FC<Props> = (props) => {
       )}
       <Button onClick={setScheduler} text="SET ALARM"></Button>
       {loadingVisible && (
-        <Loading completed={completed} hideComplete={hideComplete} />
+        <Processing completed={completed} hideComplete={hideComplete} />
       )}
     </div>
   );
