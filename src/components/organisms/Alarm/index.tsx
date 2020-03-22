@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import { scheduleAlarm } from '../../../plugins/firebase';
 import retrieveUser from '../../../plugins/firebase/retrieveUser';
 import fetchPlaylists from '../../../plugins/firebase/fetchPlaylists';
@@ -105,4 +105,4 @@ const Alarm: React.FC<Props> = (props) => {
   );
 };
 
-export default withRouter(Alarm);
+export default Alarm;
