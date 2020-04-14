@@ -4,7 +4,7 @@ import styled from 'styled-components';
 interface Props {}
 
 const Loading = forwardRef<HTMLDivElement, Props>((props, ref) => {
-  return <StyledLoading ref={ref} />;
+  return <StyledLoading className='Loading' ref={ref} />;
 });
 
 export default Loading;

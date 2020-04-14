@@ -12,17 +12,17 @@ describe('<Button />', () => {
   });
 
   test('should have proper props', () => {
-    expect(container.find('.Button').props()).toMatchObject({
+    expect(container.props()).toMatchObject({
       onClick: onClickFunction,
     });
   });
 
   test('should have proper text', () => {
-    expect(container.find('.Button').text()).toBe(text);
+    expect(container.text()).toBe(text);
   });
 
   test('click event handler should be triggered', () => {
-    container.find('.Button').simulate('click');
+    container.simulate('click');
     expect(onClickFunction).toBeCalled();
   });
 });

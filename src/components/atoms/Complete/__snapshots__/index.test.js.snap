@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Complete /> should match the snapshot 1`] = `"<div class=\\"sc-bdVaJa dOZbPm Complete\\" style=\\"display:block\\"><img src=\\"baseline-check_circle_outline-24px.svg\\" alt=\\"check\\"/></div>"`;
