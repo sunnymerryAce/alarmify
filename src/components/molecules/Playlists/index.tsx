@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Swiper from 'swiper';
 
-const createCoverFlow = (): Swiper => {
+export const createCoverFlow = (): Swiper => {
   return new Swiper('.swiper-container', {
     effect: 'coverflow',
     grabCursor: true,
@@ -47,7 +47,7 @@ const Playlists: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Title>
+      <Title className="playlist-title">
         {props.playlists[currentIndex]
           ? props.playlists[currentIndex].name
           : ''}

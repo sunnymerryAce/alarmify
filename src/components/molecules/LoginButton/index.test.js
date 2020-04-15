@@ -27,6 +27,7 @@ describe('login', () => {
 
 describe('<LoginButton />', () => {
   const container = shallow(<LoginButton />);
+
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();
   });
@@ -34,8 +35,16 @@ describe('<LoginButton />', () => {
   test('should have Button component', () => {
     expect(container.find(Button).length).toBe(1);
   });
+
+  test('Button component should have proper props', () => {
+    expect(container.find(Button).props()).toMatchObject({
+      onClick: login,
+      text: 'LOGIN TO SPOTIFY',
+    });
+  });
 });
 
+// 単体テストとしては不要？
 describe('<LoginButton /> mount', () => {
   const containerMounted = mount(<LoginButton />);
   test('should have proper text', () => {

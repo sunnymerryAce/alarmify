@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Playlists /> should match the snapshot 1`] = `"<div class=\\"sc-bdVaJa dZEyXr playlist-title\\">title</div><div class=\\"swiper-container\\"><ul class=\\"sc-bwzfXH iNIpfV swiper-wrapper\\"><li class=\\"sc-htpNat gFkvLr swiper-slide\\"><img src=\\"test.png\\" alt=\\"\\"/></li><li class=\\"sc-htpNat gFkvLr swiper-slide\\"><img src=\\"\\" alt=\\"\\"/></li></ul></div>"`;
