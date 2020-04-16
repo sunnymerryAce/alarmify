@@ -2,15 +2,24 @@ import React from 'react';
 import Processing from './index';
 import Loading from '../../atoms/Loading';
 import Complete from '../../atoms/Complete';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 
 describe('<Processing />', () => {
+  let container = null;
   const props = {
     completed: false,
     hideComplete: jest.fn(),
   };
 
-  const container = shallow(<Processing {...props} />);
+  beforeEach(() => {
+    container = shallow(<Processing {...props} />);
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
+
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();
   });
@@ -21,10 +30,12 @@ describe('<Processing />', () => {
   });
 
   // test('should loading animation start', () => {
+  //   const spyHideComplete = jest.spyOn(props, 'hideComplete');
+  //   container = mount(<Processing {...props} />);
   //   container.setProps({
   //     ...props,
   //     completed: true,
   //   });
-  //   expect(container.html()).not.toMatchSnapshot();
+  //   expect(props.hideComplete).toBeCalled();
   // });
 });

@@ -3,7 +3,17 @@ import Loading from './index';
 import { shallow } from 'enzyme';
 
 describe('<Loading />', () => {
-  const container = shallow(<Loading />);
+  let container = null;
+
+  beforeEach(() => {
+    container = shallow(<Loading />);
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
+
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();
   });

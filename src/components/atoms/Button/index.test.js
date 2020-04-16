@@ -3,10 +3,19 @@ import Button from './index';
 import { shallow } from 'enzyme';
 
 describe('<Button />', () => {
+  let container = null;
   const onClickFunction = jest.fn();
   const text = 'TEST';
 
-  const container = shallow(<Button onClick={onClickFunction} text={text} />);
+  beforeEach(() => {
+    container = shallow(<Button onClick={onClickFunction} text={text} />);
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
+
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();
   });

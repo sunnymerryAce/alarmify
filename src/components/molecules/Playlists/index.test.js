@@ -17,6 +17,7 @@ describe('createCoverFlow', () => {
 });
 
 describe('<Playlists />', () => {
+  let container = null;
   const testImageUrl = 'test.png';
   const testTitle = 'title';
   const playlists = [
@@ -46,9 +47,17 @@ describe('<Playlists />', () => {
   const onChangePlaylist = (number) => {
     console.log(number);
   };
-  const container = shallow(
-    <Playlists playlists={playlists} onChangePlaylist={onChangePlaylist} />,
-  );
+
+  beforeEach(() => {
+    container = shallow(
+      <Playlists playlists={playlists} onChangePlaylist={onChangePlaylist} />,
+    );
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
 
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();

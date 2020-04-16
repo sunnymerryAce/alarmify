@@ -26,7 +26,16 @@ describe('login', () => {
 });
 
 describe('<LoginButton />', () => {
-  const container = shallow(<LoginButton />);
+  let container = null;
+
+  beforeEach(() => {
+    container = shallow(<LoginButton />);
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
 
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();

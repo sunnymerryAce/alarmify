@@ -3,8 +3,17 @@ import Complete from './index';
 import { shallow } from 'enzyme';
 
 describe('<Complete />', () => {
+  let container = null;
   const complete = createRef();
-  const container = shallow(<Complete ref={complete} display='block'/>);
+
+  beforeEach(() => {
+    container = shallow(<Complete ref={complete} display="block" />);
+  });
+
+  afterEach(() => {
+    container.unmount();
+    container = null;
+  });
 
   test('should match the snapshot', () => {
     expect(container.html()).toMatchSnapshot();
@@ -17,7 +26,7 @@ describe('<Complete />', () => {
   test('should have proper props', () => {
     expect(container.props()).toMatchObject({
       style: {
-        display: 'block'
+        display: 'block',
       },
     });
   });
