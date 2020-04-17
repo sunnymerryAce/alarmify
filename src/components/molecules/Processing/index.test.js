@@ -1,8 +1,9 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
+import { shallow, mount } from 'enzyme';
 import Processing from './index';
 import Loading from '../../atoms/Loading';
 import Complete from '../../atoms/Complete';
-import { shallow, mount } from 'enzyme';
 
 describe('<Processing />', () => {
   let container = null;
@@ -29,13 +30,17 @@ describe('<Processing />', () => {
     expect(container.find(Complete).length).toBe(1);
   });
 
-  // test('should loading animation start', () => {
-  //   const spyHideComplete = jest.spyOn(props, 'hideComplete');
-  //   container = mount(<Processing {...props} />);
+  // test('useEffect should be called', () => {
+  //   container.unmount();
+  //   act(() => {
+  //     container = mount(<Processing {...props} />);
+  //   });
   //   container.setProps({
   //     ...props,
   //     completed: true,
   //   });
+  //   // useEffectは実行されているが、コンポーネント内の関数をモック化できないため、
+  //   // テストを通せない
   //   expect(props.hideComplete).toBeCalled();
   // });
 });
