@@ -8,20 +8,20 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
-          name: install
+          name: Install
           command: yarn
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
       - run:
-          name: add .env
+          name: Set Environment Variables
           command: |
-            echo "REACT_APP_FIREBASE_CONFIG=$REACT_APP_FIREBASE_CONFIG" > .env
-            echo "REACT_APP_REDIRECT_URI=$REACT_APP_REDIRECT_URI" > .env
-            echo "REACT_APP_SPOTIFY_CLIENT_ID=$REACT_APP_SPOTIFY_CLIENT_ID" > .env
+            echo "REACT_APP_FIREBASE_CONFIG=$REACT_APP_FIREBASE_CONFIG" >> .env
+            echo "REACT_APP_REDIRECT_URI=$REACT_APP_REDIRECT_URI" >> .env
+            echo "REACT_APP_SPOTIFY_CLIENT_ID=$REACT_APP_SPOTIFY_CLIENT_ID" >> .env
       - run:
-          name: test
+          name: Test
           command: yarn test # CIの場合、CI=trueのオプションが自動付与されwatch外れるっぽい
 
 workflows: # 定義したJobを流すフローを指定
