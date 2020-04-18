@@ -22,13 +22,16 @@ jobs:
             echo "REACT_APP_SPOTIFY_CLIENT_ID=$REACT_APP_SPOTIFY_CLIENT_ID" >> .env
       - run:
           name: Test
-          command: yarn test # CIの場合、CI=trueのオプションが自動付与されwatch外れるっぽい
+          command: yarn test
+      - run:
+          name: Build
+          command: yarn build
 
-workflows: # 定義したJobを流すフローを指定
+workflows:
   version: 2
-  install_and_test: # 任意のフロー名でOK
-    jobs: # 以下、実行Jobを順番に記述
-      - build: # 上述のJob名
+  deploy-master:
+    jobs:
+      - build:
           filters:
             branches:
-              only: master # filtersでmasterブランチへのコミットのみを対象にflowを動かすように指定
+              only: master
