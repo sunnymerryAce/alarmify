@@ -26,6 +26,9 @@ jobs:
       - run:
           name: Build
           command: yarn build
+      - run:
+          name: Deploy
+          command: yarn deploy
 
 workflows:
   version: 2
