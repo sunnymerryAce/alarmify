@@ -1,0 +1,28 @@
+version: 2 # 1/2/2.1の何れかを指定。バージョンによって記述の仕方が異なるので注意（現状であれば、2,2.1のどちらかが推奨みたい
+jobs: # 必須固定
+  build: # Job名/Jobが1つの場合は必ず"build:"
+    docker: # ビルド環境(machine/macosなどのVPCを選ぶことも可能だけど、dockerが主流みたい
+      - image: circleci/node:10 # ビルドイメージを指定。firebaseCLIはnode.js ver6.0.0以上推奨であることを確認しつつ、現在のnode.js推奨バージョンである10を指定
+    steps: # 実行内容記述開始の合図
+      - checkout # GitHubのリポジトリ配下のファイルを丸っとビルド環境に持ってくる
+      - restore_cache: # ライブラリのキャッシュの復元
+          key: dependency-cache-{{ checksum "yarn.lock" }} # checksumの記載以外はkey名は任意っぽい
+      - run:
+          name: install
+          command: yarn
+      - save_cache: # インストールしたモジュールをnode_modulesごとキャッシュ
+          key: dependency-cache-{{ checksum "yarn.lock" }} # restore_cacheと合わせる
+          paths:
+            - ./node_modules
+      - run:
+          name: test
+          command: yarn test # CIの場合、CI=trueのオプションが自動付与されwatch外れるっぽい
+
+workflows: # 定義したJobを流すフローを指定
+  version: 2
+  install_and_test: # 任意のフロー名でOK
+    jobs: # 以下、実行Jobを順番に記述
+      - build: # 上述のJob名
+          filters:
+            branches:
+              only: master # filtersでmasterブランチへのコミットのみを対象にflowを動かすように指定
