@@ -23,9 +23,7 @@ const getPlayLists = async (
   return await fetchPlaylists(param);
 };
 
-interface Props extends RouteComponentProps {}
-
-const Alarm: React.FC<Props> = (props) => {
+const Alarm: React.FC<RouteComponentProps> = (props) => {
   const [playlists, setPlaylists] = useState<
     Array<SpotifyApi.PlaylistObjectSimplified>
   >([]);
@@ -37,6 +35,7 @@ const Alarm: React.FC<Props> = (props) => {
   const [completed, setCompleted] = useState<boolean>(false);
 
   useEffect(() => {
+    // TODO: Top.tsxの方がいいのでは
     initialize();
     // 初期処理のため第二引数を指定しない
     // eslint-disable-next-line react-hooks/exhaustive-deps

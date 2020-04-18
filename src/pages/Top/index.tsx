@@ -1,11 +1,12 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import Alarm from 'src/components/organisms/Alarm';
 
-const Top: React.FC = () => {
+const Top: React.FC<RouteComponentProps> = (props) => {
   return (
     <div className="Top">
-      <Alarm />
+      <Alarm {...props} />
     </div>
   );
 };

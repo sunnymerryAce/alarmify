@@ -1,19 +1,25 @@
-version: 2 # 1/2/2.1の何れかを指定。バージョンによって記述の仕方が異なるので注意（現状であれば、2,2.1のどちらかが推奨みたい
-jobs: # 必須固定
-  build: # Job名/Jobが1つの場合は必ず"build:"
-    docker: # ビルド環境(machine/macosなどのVPCを選ぶことも可能だけど、dockerが主流みたい
-      - image: circleci/node:10 # ビルドイメージを指定。firebaseCLIはnode.js ver6.0.0以上推奨であることを確認しつつ、現在のnode.js推奨バージョンである10を指定
-    steps: # 実行内容記述開始の合図
-      - checkout # GitHubのリポジトリ配下のファイルを丸っとビルド環境に持ってくる
-      - restore_cache: # ライブラリのキャッシュの復元
-          key: dependency-cache-{{ checksum "yarn.lock" }} # checksumの記載以外はkey名は任意っぽい
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: install
           command: yarn
-      - save_cache: # インストールしたモジュールをnode_modulesごとキャッシュ
-          key: dependency-cache-{{ checksum "yarn.lock" }} # restore_cacheと合わせる
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
+      - run:
+          name: add .env
+          command: |
+            echo "REACT_APP_FIREBASE_CONFIG=$REACT_APP_FIREBASE_CONFIG" > .env
+            echo "REACT_APP_REDIRECT_URI=$REACT_APP_REDIRECT_URI" > .env
+            echo "REACT_APP_SPOTIFY_CLIENT_ID=$REACT_APP_SPOTIFY_CLIENT_ID" > .env
       - run:
           name: test
           command: yarn test # CIの場合、CI=trueのオプションが自動付与されwatch外れるっぽい
