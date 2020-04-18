@@ -1,5 +1,8 @@
+import 'firebase';
+import { User } from '../'
+
 declare namespace Api {
-  export interface GetUserFromFirestoreResponse
+  interface GetUserFromFirestoreResponse
     extends firebase.functions.HttpsCallableResult {
     readonly data: {
       ok: boolean;
@@ -7,7 +10,7 @@ declare namespace Api {
       error?: string;
     };
   }
-  export interface UpdateUserParam {
+  interface UpdateUserParam {
     client: any;
     user?: User;
     access_token?: string;
@@ -15,29 +18,29 @@ declare namespace Api {
     playlistUri?: string;
   }
 
-  export interface SetSchedulerParam {
+  interface SetSchedulerParam {
     client: any;
     hour: string;
     minute: string;
   }
 
-  export interface PlaySpotifyParam {
+  interface PlaySpotifyParam {
     accessToken: string;
     playlistUri: string;
   }
 
-  export interface GetSpotifyAccessTokenParam {
+  interface GetSpotifyAccessTokenParam {
     isRefresh: boolean;
     code?: string;
     refresh_token?: string;
   }
 
-  export interface GetPlayListsParam {
+  interface GetPlayListsParam {
     user: User | null;
     code: string | null;
   }
 
-  export interface GetPlaylistsResponse
+  interface GetPlaylistsResponse
     extends firebase.functions.HttpsCallableResult {
     readonly data: {
       ok: boolean;
@@ -47,4 +50,4 @@ declare namespace Api {
   }
 }
 
-// export default Api;
+export default Api;

@@ -1,9 +1,10 @@
 import { RequestInit } from 'node-fetch';
 import updateUser from '../common/updateUser';
 import CONFIG from '../util/CONFIG';
-import { GetSpotifyAccessTokenParam } from '../../../types/index';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
+
+import Api from '../../../types/Api/index';
 
 /**
  * Spotify APIのアクセストークンを取得する
@@ -14,7 +15,7 @@ import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
  * @throws Error
  */
 const getSpotifyAccessToken = async (
-  param: GetSpotifyAccessTokenParam,
+  param: Api.GetSpotifyAccessTokenParam,
 ): Promise<any> => {
   const { isRefresh, code, refresh_token } = param;
   const secretKey = `${CONFIG.SPOTIFY_CLIENT_ID}:${CONFIG.SPOTIFY_CLIENT_SECRET}`;
@@ -49,7 +50,7 @@ const getSpotifyAccessToken = async (
  */
 const getNewSpotifyAccessToken = async (
   client: any,
-  getSpotifyAccessTokenParam: GetSpotifyAccessTokenParam,
+  getSpotifyAccessTokenParam: Api.GetSpotifyAccessTokenParam,
 ): Promise<string> => {
   const newSpotifyAccessToken = await getSpotifyAccessToken(
     getSpotifyAccessTokenParam,

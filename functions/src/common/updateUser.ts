@@ -1,9 +1,11 @@
-import { UpdateUserParam } from '../../../types';
 import CONFIG from '../util/CONFIG';
 import { google, firestore_v1beta1 } from 'googleapis';
+
+import Api from '../../../types/Api/index';
+
 const firestore = google.firestore('v1beta1');
 
-const createRequestBody = (param: UpdateUserParam): Object => {
+const createRequestBody = (param: Api.UpdateUserParam): Object => {
   const requestBody: any = {
     fields: {},
   };
@@ -30,7 +32,7 @@ const createRequestBody = (param: UpdateUserParam): Object => {
  * Firestoreのユーザ情報を更新する
  * @param param
  */
-const updateUser = (param: UpdateUserParam): Promise<any> => {
+const updateUser = (param: Api.UpdateUserParam): Promise<any> => {
   const requestBody: any = createRequestBody(param);
   const fieldPaths: Array<string> = [];
   Object.entries(requestBody.fields).forEach(([key, value]) => {

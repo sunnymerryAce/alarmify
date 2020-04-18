@@ -1,4 +1,4 @@
-declare interface User {
+export interface User {
   access_token: string;
   deviceId?: string;
   playlistUri: string;
