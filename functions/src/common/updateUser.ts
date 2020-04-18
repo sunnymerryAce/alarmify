@@ -9,6 +9,7 @@ const createRequestBody = (param: Api.UpdateUserParam): Object => {
   const requestBody: any = {
     fields: {},
   };
+  // firestoreに登録されているユーザー情報
   const { user } = param;
   const access_token =
     user && user.access_token ? user.access_token : param.access_token;
@@ -20,8 +21,8 @@ const createRequestBody = (param: Api.UpdateUserParam): Object => {
   if (refresh_token) {
     requestBody.fields.refresh_token = { stringValue: refresh_token };
   }
-  const playlistUri =
-    user && user.playlistUri ? user.playlistUri : param.playlistUri;
+  // playlistUriはクライアントからの指定を優先する
+  const playlistUri = param.playlistUri ? param.playlistUri : user?.playlistUri;
   if (playlistUri) {
     requestBody.fields.playlistUri = { stringValue: playlistUri };
   }
@@ -42,7 +43,7 @@ const updateUser = (param: Api.UpdateUserParam): Promise<any> => {
     auth: param.client,
     name: `projects/${CONFIG.PROJECT_ID}/databases/${CONFIG.DATABASE_ID}/documents/users/${CONFIG.USER_NAME}`,
     'updateMask.fieldPaths': fieldPaths,
-    requestBody: createRequestBody(param),
+    requestBody,
   };
 
   return new Promise((resolve, reject) => {
