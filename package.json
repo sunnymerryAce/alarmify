@@ -35,8 +35,8 @@
     "styled-components": "^4.4.1",
     "swiper": "^5.2.1",
     "typescript": "~3.7.2",
-    "api": "file:functions/types/api",
-    "user": "file:functions/types/user"
+    "api": "file:functions/types/api/index.d.ts",
+    "user": "file:functions/types/index.d.ts"
   },
   "scripts": {
     "start": "react-scripts start",
