@@ -1,7 +1,7 @@
 import CONFIG from '../util/CONFIG';
 import { google } from 'googleapis';
 
-import Api from '../../../types/Api/index';
+import { SetSchedulerParam } from 'api';
 
 const cloudScheduler = google.cloudscheduler('v1beta1');
 
@@ -10,7 +10,7 @@ const cloudScheduler = google.cloudscheduler('v1beta1');
  * @param param
  * @returns result
  */
-const setScheduler = (param: Api.SetSchedulerParam): Promise<any> => {
+const setScheduler = (param: SetSchedulerParam): Promise<any> => {
   const { client, hour, minute } = param;
   const schedule = `${minute} ${hour} * * *`;
   const params = {

@@ -8,6 +8,9 @@ import Playlists from '../../molecules/Playlists';
 import Processing from '../../molecules/Processing';
 import Button from '../../atoms/Button';
 
+import User from 'user';
+import { GetPlayListsParam } from 'api';
+
 const isLoggedInSpotify = (): boolean => {
   return /code/.test(window.location.search) as boolean;
 };
@@ -15,7 +18,7 @@ const isLoggedInSpotify = (): boolean => {
 const getPlayLists = async (
   user: User | null,
 ): Promise<Array<SpotifyApi.PlaylistObjectSimplified>> => {
-  const param: Api.GetPlayListsParam = {
+  const param: GetPlayListsParam = {
     user,
     // 初回ログイン時、authorization codeでfetch
     code: user ? null : new URL(window.location.href).searchParams.get('code'),

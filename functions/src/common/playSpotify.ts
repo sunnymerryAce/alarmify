@@ -2,15 +2,14 @@ import { RequestInit } from 'node-fetch';
 import CONFIG from '../util/CONFIG';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
 
-import Api from '../../../types/Api/index';
-
+import { PlaySpotifyParam } from 'api'
 /**
  * 接続先デバイスから音楽を再生する(Spotify APIリクエスト)
  * @param param
  * @returns result
  * @throws Error
  */
-const playSpotify = async (param: Api.PlaySpotifyParam): Promise<any> => {
+const playSpotify = async (param: PlaySpotifyParam): Promise<any> => {
   const { accessToken, playlistUri } = param;
   const uri = CONFIG.SPOTIFY_API.PUT_PLAY;
   const fetchOptions: RequestInit = {

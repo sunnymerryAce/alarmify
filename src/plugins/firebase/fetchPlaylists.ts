@@ -1,15 +1,17 @@
 import { getPlaylists } from '.';
 import { orderBy } from 'lodash-es';
 
+import { GetPlayListsParam, GetPlaylistsResponse } from 'api';
+
 /**
  * ユーザーのプレイリスト一覧を取得するAPI
  * @param GetPlayListsParam
  * @returns プレイリスト一覧
  */
 const fetchPlaylists = async (
-  param: Api.GetPlayListsParam,
+  param: GetPlayListsParam,
 ): Promise<Array<SpotifyApi.PlaylistObjectSimplified>> => {
-  const { data }: Api.GetPlaylistsResponse = await getPlaylists(param).catch(
+  const { data }: GetPlaylistsResponse = await getPlaylists(param).catch(
     () => {
       return {
         data: {

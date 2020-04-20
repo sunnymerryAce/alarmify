@@ -1,5 +1,8 @@
 import { getUserFromFirestore } from '.';
 
+import User from 'user';
+import { GetUserFromFirestoreResponse } from 'api';
+
 /**
  * Firestoreからユーザー情報を取得するAPI
  * @returns ユーザー情報
@@ -7,7 +10,7 @@ import { getUserFromFirestore } from '.';
 const retrieveUser = async (): Promise<User | null> => {
   const {
     data,
-  }: Api.GetUserFromFirestoreResponse = await getUserFromFirestore().catch(
+  }: GetUserFromFirestoreResponse = await getUserFromFirestore().catch(
     () => {
       return {
         data: {
