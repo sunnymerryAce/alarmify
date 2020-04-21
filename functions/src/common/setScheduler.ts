@@ -1,7 +1,11 @@
-import CONFIG from '../util/CONFIG';
 import { google } from 'googleapis';
+import CONFIG from '@/util/CONFIG';
 
-import { SetSchedulerParam } from 'api';
+interface SetSchedulerParam {
+  client: any;
+  hour: string;
+  minute: string;
+}
 
 const cloudScheduler = google.cloudscheduler('v1beta1');
 

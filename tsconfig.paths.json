@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
-    "paths": { "*": ["functions/types/*"] } // バックエンドの型定義を流用
+    "paths": {
+      "@/*": ["../src/*"],
+      "types/*": ["../functions/types/*"],
+    }
   }
 }

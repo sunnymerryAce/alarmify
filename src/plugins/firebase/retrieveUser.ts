@@ -1,7 +1,14 @@
 import { getUserFromFirestore } from '.';
+import { User } from 'types/user';
 
-import User from 'user';
-import { GetUserFromFirestoreResponse } from 'api';
+export interface GetUserFromFirestoreResponse
+  extends firebase.functions.HttpsCallableResult {
+  readonly data: {
+    ok: boolean;
+    user?: User;
+    error?: string;
+  };
+}
 
 /**
  * Firestoreからユーザー情報を取得するAPI

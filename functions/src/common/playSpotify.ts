@@ -1,8 +1,12 @@
 import { RequestInit } from 'node-fetch';
-import CONFIG from '../util/CONFIG';
-import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
+import CONFIG from '@/util/CONFIG';
+import fetchWithErrorHandling from '@/util/functions/fetchWithErrorHandling';
 
-import { PlaySpotifyParam } from 'api'
+interface PlaySpotifyParam {
+  accessToken: string;
+  playlistUri: string;
+}
+
 /**
  * 接続先デバイスから音楽を再生する(Spotify APIリクエスト)
  * @param param

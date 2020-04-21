@@ -1,22 +1,22 @@
 import * as functions from 'firebase-functions';
-import CONFIG from '../util/CONFIG';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import getNewSpotifyAccessToken from '../common/getNewSpotifyAccessToken';
-import getUserPlaylists from '../common/getUserPlaylists';
+import CONFIG from '@/util/CONFIG';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import getNewSpotifyAccessToken from '@/common/getNewSpotifyAccessToken';
+import getUserPlaylists from '@/common/getUserPlaylists';
 
 /**
  * ユーザーのSpotifyプレイリスト一覧を取得する
  */
-module.exports = functions.https.onCall(async (data, context) => {
+module.exports = functions.https.onCall(async (data) => {
   try {
     const { code, user } = data;
     // OAuthでOAuth2Clientを取得
     const client = await getGCPAuthorizedClient();
     let accessToken = code
       ? await getNewSpotifyAccessToken(client, {
-          isRefresh: false,
-          code,
-        })
+        isRefresh: false,
+        code,
+      })
       : user.access_token;
     const playlists: SpotifyApi.ListOfUsersPlaylistsResponse = await getUserPlaylists(
       accessToken,
@@ -28,10 +28,10 @@ module.exports = functions.https.onCall(async (data, context) => {
           refresh_token: user.refresh_token,
         });
         // リトライ
-        return await getUserPlaylists(accessToken);
-      } else {
-        throw error;
+        const retry = await getUserPlaylists(accessToken);
+        return retry;
       }
+      throw error;
     });
     return {
       ok: true,

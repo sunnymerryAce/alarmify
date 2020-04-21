@@ -1,7 +1,7 @@
 import { RequestInit } from 'node-fetch';
-import CONFIG from '../util/CONFIG';
-import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
-import createURLSearchParams from '../util/functions/createURLSearchParams';
+import CONFIG from '@/util/CONFIG';
+import fetchWithErrorHandling from '@/util/functions/fetchWithErrorHandling';
+import createURLSearchParams from '@/util/functions/createURLSearchParams';
 
 /**
  * get User's playlists

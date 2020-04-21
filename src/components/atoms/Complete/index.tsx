@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import styled from 'styled-components';
-import check from 'src/images/baseline-check_circle_outline-24px.svg';
+import check from '@/images/baseline-check_circle_outline-24px.svg';
 
 interface Props {
   display: string;

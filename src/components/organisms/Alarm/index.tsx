@@ -8,8 +8,8 @@ import Playlists from '../../molecules/Playlists';
 import Processing from '../../molecules/Processing';
 import Button from '../../atoms/Button';
 
-import User from 'user';
-import { GetPlayListsParam } from 'api';
+import { User } from 'types/user';
+import { GetPlayListsParam } from '@/plugins/firebase/fetchPlaylists';
 
 const isLoggedInSpotify = (): boolean => {
   return /code/.test(window.location.search) as boolean;

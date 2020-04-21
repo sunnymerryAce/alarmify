@@ -1,12 +1,13 @@
 import * as functions from 'firebase-functions';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import updateUser from '../common/updateUser';
-import getUserFromFirestore from '../common/getUserFromFirestore';
-import setScheduler from '../common/setScheduler';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import updateUser from '@/common/updateUser';
+import getUserFromFirestore from '@/common/getUserFromFirestore';
+import setScheduler from '@/common/setScheduler';
+
 /**
  * アラームを設定する
  */
-module.exports = functions.https.onCall(async (data, context) => {
+module.exports = functions.https.onCall(async (data) => {
   try {
     // OAuthでOAuth2Clientを取得
     const client = await getGCPAuthorizedClient();

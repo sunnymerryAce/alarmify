@@ -1,7 +1,18 @@
 import { getPlaylists } from '.';
 import { orderBy } from 'lodash-es';
-
-import { GetPlayListsParam, GetPlaylistsResponse } from 'api';
+import { User } from 'types/user';
+export interface GetPlayListsParam {
+  user: User | null;
+  code: string | null;
+}
+export interface GetPlaylistsResponse
+  extends firebase.functions.HttpsCallableResult {
+  readonly data: {
+    ok: boolean;
+    playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
+    error?: string;
+  };
+}
 
 /**
  * ユーザーのプレイリスト一覧を取得するAPI

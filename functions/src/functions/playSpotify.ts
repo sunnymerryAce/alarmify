@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
-import CONFIG from '../util/CONFIG';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import getNewSpotifyAccessToken from '../common/getNewSpotifyAccessToken';
-import playSpotify from '../common/playSpotify';
-import getUserFromFirestore from '../common/getUserFromFirestore';
+import CONFIG from '@/util/CONFIG';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import getNewSpotifyAccessToken from '@/common/getNewSpotifyAccessToken';
+import playSpotify from '@/common/playSpotify';
+import getUserFromFirestore from '@/common/getUserFromFirestore';
 
 /**
  * 接続されたデバイスでSpotifyを再生する
@@ -30,11 +30,13 @@ module.exports = functions
             refresh_token: user.refresh_token,
           });
           // 再トライ
-          return await playSpotify({
-            accessToken: accessToken,
+          const retry = await playSpotify({
+            accessToken,
             playlistUri: user.playlistUri,
           });
+          return retry;
         }
+        throw error;
       });
       return {
         ok: true,

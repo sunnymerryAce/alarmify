@@ -1,8 +1,8 @@
 import * as functions from 'firebase-functions';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import getUserFromFirestore from '../common/getUserFromFirestore';
+import { User } from 'types/user';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import getUserFromFirestore from '@/common/getUserFromFirestore';
 
-import User from 'user';
 /**
  * Firestoreからユーザ情報を取得する
  */
