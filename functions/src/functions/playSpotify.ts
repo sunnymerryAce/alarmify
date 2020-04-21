@@ -30,11 +30,13 @@ module.exports = functions
             refresh_token: user.refresh_token,
           });
           // 再トライ
-          return await playSpotify({
-            accessToken: accessToken,
+          const retry = await playSpotify({
+            accessToken,
             playlistUri: user.playlistUri,
           });
+          return retry;
         }
+        throw error;
       });
       return {
         ok: true,

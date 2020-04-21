@@ -11,13 +11,11 @@
     "strict": true,
     "target": "es2017",
     "baseUrl": "./",
-    "paths": { "*": ["types/*"] },
-    "typeRoots": [
-      "node_modules/@types", // デフォルトではここだけ読む 忘れず書き添える
-      "types" // ここを読むように追記
-    ]
+    "paths": {
+      "@src/*": ["./src/*"],
+      "types/*": ["./types/*"],
+    }
   },
-  "compileOnSave": true,
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

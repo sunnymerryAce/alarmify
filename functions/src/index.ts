@@ -1,9 +1,10 @@
+/* eslint-disable global-require */
 /**
  * Firestoreユーザ情報取得
  */
 if (
-  !process.env.FUNCTION_NAME ||
-  process.env.FUNCTION_NAME === 'getUserFromFirestore'
+  !process.env.FUNCTION_NAME
+  || process.env.FUNCTION_NAME === 'getUserFromFirestore'
 ) {
   exports.getUserFromFirestore = require('./functions/getUserFromFirestore');
 }
@@ -12,8 +13,8 @@ if (
  * Spotifyプレイリスト一覧取得
  */
 if (
-  !process.env.FUNCTION_NAME ||
-  process.env.FUNCTION_NAME === 'getPlaylists'
+  !process.env.FUNCTION_NAME
+  || process.env.FUNCTION_NAME === 'getPlaylists'
 ) {
   exports.getPlaylists = require('./functions/getPlaylists');
 }
@@ -22,8 +23,8 @@ if (
  * アラーム設定
  */
 if (
-  !process.env.FUNCTION_NAME ||
-  process.env.FUNCTION_NAME === 'scheduleAlarm'
+  !process.env.FUNCTION_NAME
+  || process.env.FUNCTION_NAME === 'scheduleAlarm'
 ) {
   exports.scheduleAlarm = require('./functions/scheduleAlarm');
 }

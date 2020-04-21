@@ -1,7 +1,14 @@
-import CONFIG from '../util/CONFIG';
 import { google, firestore_v1beta1 } from 'googleapis';
+import { User } from 'types/user';
+import CONFIG from '../util/CONFIG';
 
-import { UpdateUserParam } from 'api';
+interface UpdateUserParam {
+  client: any;
+  user?: User;
+  access_token?: string;
+  refresh_token?: string;
+  playlistUri?: string;
+}
 
 const firestore = google.firestore('v1beta1');
 
@@ -11,13 +18,11 @@ const createRequestBody = (param: UpdateUserParam): Object => {
   };
   // firestoreに登録されているユーザー情報
   const { user } = param;
-  const access_token =
-    user && user.access_token ? user.access_token : param.access_token;
+  const access_token = user && user.access_token ? user.access_token : param.access_token;
   if (access_token) {
     requestBody.fields.access_token = { stringValue: access_token };
   }
-  const refresh_token =
-    user && user.refresh_token ? user.refresh_token : param.refresh_token;
+  const refresh_token = user && user.refresh_token ? user.refresh_token : param.refresh_token;
   if (refresh_token) {
     requestBody.fields.refresh_token = { stringValue: refresh_token };
   }
@@ -36,7 +41,7 @@ const createRequestBody = (param: UpdateUserParam): Object => {
 const updateUser = (param: UpdateUserParam): Promise<any> => {
   const requestBody: any = createRequestBody(param);
   const fieldPaths: Array<string> = [];
-  Object.entries(requestBody.fields).forEach(([key, value]) => {
+  Object.entries(requestBody.fields).forEach(([key]) => {
     fieldPaths.push(key);
   });
   const patchParam: firestore_v1beta1.Params$Resource$Projects$Databases$Documents$Patch = {

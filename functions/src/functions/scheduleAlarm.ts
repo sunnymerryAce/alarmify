@@ -6,7 +6,7 @@ import setScheduler from '../common/setScheduler';
 /**
  * アラームを設定する
  */
-module.exports = functions.https.onCall(async (data, context) => {
+module.exports = functions.https.onCall(async (data) => {
   try {
     // OAuthでOAuth2Clientを取得
     const client = await getGCPAuthorizedClient();

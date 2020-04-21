@@ -1,10 +1,14 @@
 import { RequestInit } from 'node-fetch';
-import updateUser from '../common/updateUser';
+import updateUser from './updateUser';
 import CONFIG from '../util/CONFIG';
 import createURLSearchParams from '../util/functions/createURLSearchParams';
 import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
 
-import { GetSpotifyAccessTokenParam } from 'api';
+interface GetSpotifyAccessTokenParam {
+  isRefresh: boolean;
+  code?: string;
+  refresh_token?: string;
+}
 
 /**
  * Spotify APIのアクセストークンを取得する
