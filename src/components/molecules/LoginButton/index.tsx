@@ -1,7 +1,7 @@
 import React from 'react';
-import Button from '../../atoms/Button';
-import CONFIG from '../../../util/CONFIG';
-import createURLSearchParamsFromObject from '../../../util/functions/createURLSearchParamsFromObject';
+import Button from '@/components/atoms/Button';
+import CONFIG from '@/util/CONFIG';
+import createURLSearchParamsFromObject from '@/util/functions/createURLSearchParamsFromObject';
 
 export const redirectURL = (): string => {
   const url = new URL(CONFIG.SPOTIFY_LOGIN_URI);
