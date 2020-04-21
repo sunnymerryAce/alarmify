@@ -303,7 +303,7 @@ module.exports = function(webpackEnv) {
         ...(modules.webpackAliases || {}),
         // ルート相対パス解決
         '@': path.resolve(__dirname, '../src'),
-        types: path.resolve(__dirname, '../functions/types'),
+        '@functions': path.resolve(__dirname, '../functions'),
       },
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding

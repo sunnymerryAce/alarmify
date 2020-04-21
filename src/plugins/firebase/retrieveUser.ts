@@ -1,5 +1,5 @@
 import { getUserFromFirestore } from '.';
-import { User } from 'types/user';
+import { User } from '@functions/types/user';
 
 export interface GetUserFromFirestoreResponse
   extends firebase.functions.HttpsCallableResult {

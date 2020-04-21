@@ -1,6 +1,6 @@
 import { getPlaylists } from '.';
 import { orderBy } from 'lodash-es';
-import { User } from 'types/user';
+import { User } from '@functions/types/user';
 export interface GetPlayListsParam {
   user: User | null;
   code: string | null;

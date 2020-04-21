@@ -7,7 +7,7 @@ import Timer from '@/components/molecules/Timer';
 import Playlists from '@/components/molecules/Playlists';
 import Processing from '@/components/molecules/Processing';
 import Button from '@/components/atoms/Button';
-import { User } from 'types/user';
+import { User } from '@functions/types/user';
 
 const isLoggedInSpotify = (): boolean => {
   return /code/.test(window.location.search) as boolean;
