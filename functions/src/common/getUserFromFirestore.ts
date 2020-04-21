@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
-import CONFIG from '@src/util/CONFIG';
 import { User } from 'types/user';
+import CONFIG from '@/util/CONFIG';
 
 const firestore = google.firestore('v1beta1');
 

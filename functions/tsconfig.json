@@ -12,7 +12,7 @@
     "target": "es2017",
     "baseUrl": "./",
     "paths": {
-      "@src/*": ["./src/*"],
+      "@/*": ["./src/*"],
       "types/*": ["./types/*"],
     }
   },

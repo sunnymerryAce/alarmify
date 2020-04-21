@@ -1,8 +1,8 @@
 import { RequestInit } from 'node-fetch';
+import CONFIG from '@/util/CONFIG';
 import updateUser from './updateUser';
-import CONFIG from '../util/CONFIG';
-import createURLSearchParams from '../util/functions/createURLSearchParams';
-import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
+import createURLSearchParams from '@/util/functions/createURLSearchParams';
+import fetchWithErrorHandling from '@/util/functions/fetchWithErrorHandling';
 
 interface GetSpotifyAccessTokenParam {
   isRefresh: boolean;

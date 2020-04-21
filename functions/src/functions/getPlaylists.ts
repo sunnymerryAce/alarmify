@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions';
-import CONFIG from '../util/CONFIG';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import getNewSpotifyAccessToken from '../common/getNewSpotifyAccessToken';
-import getUserPlaylists from '../common/getUserPlaylists';
-
+import CONFIG from '@/util/CONFIG';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import getNewSpotifyAccessToken from '@/common/getNewSpotifyAccessToken';
+import getUserPlaylists from '@/common/getUserPlaylists';
 
 /**
  * ユーザーのSpotifyプレイリスト一覧を取得する

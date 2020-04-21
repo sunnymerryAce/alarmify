@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import CONFIG from '../util/CONFIG';
+import CONFIG from '@/util/CONFIG';
 
 interface SetSchedulerParam {
   client: any;

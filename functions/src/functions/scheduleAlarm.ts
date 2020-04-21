@@ -1,8 +1,9 @@
 import * as functions from 'firebase-functions';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import updateUser from '../common/updateUser';
-import getUserFromFirestore from '../common/getUserFromFirestore';
-import setScheduler from '../common/setScheduler';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import updateUser from '@/common/updateUser';
+import getUserFromFirestore from '@/common/getUserFromFirestore';
+import setScheduler from '@/common/setScheduler';
+
 /**
  * アラームを設定する
  */

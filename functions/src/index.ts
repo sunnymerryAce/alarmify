@@ -6,7 +6,7 @@ if (
   !process.env.FUNCTION_NAME
   || process.env.FUNCTION_NAME === 'getUserFromFirestore'
 ) {
-  exports.getUserFromFirestore = require('./functions/getUserFromFirestore');
+  exports.getUserFromFirestore = require('@/functions/getUserFromFirestore');
 }
 
 /**
@@ -16,7 +16,7 @@ if (
   !process.env.FUNCTION_NAME
   || process.env.FUNCTION_NAME === 'getPlaylists'
 ) {
-  exports.getPlaylists = require('./functions/getPlaylists');
+  exports.getPlaylists = require('@/functions/getPlaylists');
 }
 
 /**
@@ -26,12 +26,12 @@ if (
   !process.env.FUNCTION_NAME
   || process.env.FUNCTION_NAME === 'scheduleAlarm'
 ) {
-  exports.scheduleAlarm = require('./functions/scheduleAlarm');
+  exports.scheduleAlarm = require('@/functions/scheduleAlarm');
 }
 
 /**
  * Spotify再生
  */
 if (!process.env.FUNCTION_NAME || process.env.FUNCTION_NAME === 'playSpotify') {
-  exports.playSpotify = require('./functions/playSpotify');
+  exports.playSpotify = require('@/functions/playSpotify');
 }

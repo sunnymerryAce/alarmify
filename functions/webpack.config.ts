@@ -30,7 +30,7 @@ module.exports = {
     modules: ['node_modules', path.resolve(__dirname, 'src')],
     extensions: ['.ts', '.tsx', '.js', '.json'],
     alias: {
-      '@src': path.resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
       types: path.resolve(__dirname, 'types'),
     },
   },

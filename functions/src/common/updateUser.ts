@@ -1,6 +1,6 @@
 import { google, firestore_v1beta1 } from 'googleapis';
 import { User } from 'types/user';
-import CONFIG from '../util/CONFIG';
+import CONFIG from '@/util/CONFIG';
 
 interface UpdateUserParam {
   client: any;

@@ -1,6 +1,6 @@
 import { RequestInit } from 'node-fetch';
-import CONFIG from '../util/CONFIG';
-import fetchWithErrorHandling from '../util/functions/fetchWithErrorHandling';
+import CONFIG from '@/util/CONFIG';
+import fetchWithErrorHandling from '@/util/functions/fetchWithErrorHandling';
 
 interface PlaySpotifyParam {
   accessToken: string;

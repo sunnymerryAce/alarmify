@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
-import CONFIG from '../util/CONFIG';
-import getGCPAuthorizedClient from '../common/getGCPAuthorizedClient';
-import getNewSpotifyAccessToken from '../common/getNewSpotifyAccessToken';
-import playSpotify from '../common/playSpotify';
-import getUserFromFirestore from '../common/getUserFromFirestore';
+import CONFIG from '@/util/CONFIG';
+import getGCPAuthorizedClient from '@/common/getGCPAuthorizedClient';
+import getNewSpotifyAccessToken from '@/common/getNewSpotifyAccessToken';
+import playSpotify from '@/common/playSpotify';
+import getUserFromFirestore from '@/common/getUserFromFirestore';
 
 /**
  * 接続されたデバイスでSpotifyを再生する

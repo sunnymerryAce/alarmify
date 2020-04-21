@@ -1,5 +1,5 @@
 import fetch, { RequestInit, Response } from 'node-fetch';
-import CONFIG from '../CONFIG';
+import CONFIG from '@/util/CONFIG';
 
 /**
  * fetchのステータスがエラーならエラーを投げる
