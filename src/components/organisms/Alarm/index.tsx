@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { scheduleAlarm } from '../../../plugins/firebase';
-import retrieveUser from '../../../plugins/firebase/retrieveUser';
-import fetchPlaylists from '../../../plugins/firebase/fetchPlaylists';
-import Timer from '../../molecules/Timer';
-import Playlists from '../../molecules/Playlists';
-import Processing from '../../molecules/Processing';
-import Button from '../../atoms/Button';
-
+import { scheduleAlarm } from '@/plugins/firebase';
+import retrieveUser from '@/plugins/firebase/retrieveUser';
+import fetchPlaylists, { GetPlayListsParam } from '@/plugins/firebase/fetchPlaylists';
+import Timer from '@/components/molecules/Timer';
+import Playlists from '@/components/molecules/Playlists';
+import Processing from '@/components/molecules/Processing';
+import Button from '@/components/atoms/Button';
 import { User } from 'types/user';
-import { GetPlayListsParam } from '@/plugins/firebase/fetchPlaylists';
 
 const isLoggedInSpotify = (): boolean => {
   return /code/.test(window.location.search) as boolean;
