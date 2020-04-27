@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import * as path from 'path';
 
-const env = readFileSync(path.resolve(__dirname, '../../.env'), { encoding: 'utf-8' });
+const env = readFileSync(path.resolve(__dirname, '../.env'), { encoding: 'utf-8' });
 const lines = env.toString().split(/\n/g);
 lines.forEach((line) => {
   if (!line.length) return;

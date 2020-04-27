@@ -9,8 +9,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "jest --watch  --silent=false --verbose false",
-    "set-config": "ts-node scripts/setConfig.ts"
+    "test": "jest --watch  --silent=false --verbose false"
   },
   "engines": {
     "node": "10"
