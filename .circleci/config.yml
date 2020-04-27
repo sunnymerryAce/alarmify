@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy_production:
+  build:
     docker:
       - image: circleci/node:10
     steps:
@@ -57,7 +57,7 @@ workflows:
   version: 2
   deploy_master:
     jobs:
-      - deploy_production:
+      - build:
           filters:
             branches:
               only: master
