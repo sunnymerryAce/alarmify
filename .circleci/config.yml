@@ -43,7 +43,7 @@ jobs:
 
 workflows:
   version: 2
-  deploy-master:
+  deploy_master:
     jobs:
       - deploy_production:
           filters:
