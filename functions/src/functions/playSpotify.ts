@@ -10,7 +10,7 @@ import getUserFromFirestore from '@/common/getUserFromFirestore';
  */
 module.exports = functions
   .region('asia-northeast1')
-  .pubsub.topic(CONFIG.JOB_NAME)
+  .pubsub.topic('spotify-cron')
   .onPublish(async () => {
     try {
       let res = null;

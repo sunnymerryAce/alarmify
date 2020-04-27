@@ -5,10 +5,11 @@ jobs:
       - image: circleci/node:10
     steps:
       - checkout
+      # functions配下のnpm設定
       - restore_cache:
           key: dependency-cache-{{ checksum "functions/yarn.lock" }}
       - run:
-          name: Install functions
+          name: Install functions/
           command: yarn
           working_directory: functions
       - save_cache:
