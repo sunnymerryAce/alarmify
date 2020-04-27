@@ -30,9 +30,7 @@ jobs:
             echo "redirect_uri=$redirect_uri" >> .env
       - run:
           name: Set Firebase Config
-          command: |
-            firebase use $project_id
-            yarn set-config
+          command: yarn set-config
       - run:
           name: Test
           command: yarn test
