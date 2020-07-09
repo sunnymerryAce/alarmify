@@ -32,14 +32,14 @@ jobs:
             echo "REACT_APP_FIREBASE_CONFIG=$REACT_APP_FIREBASE_CONFIG" >> .env
             echo "REACT_APP_REDIRECT_URI=$REACT_APP_REDIRECT_URI" >> .env
             echo "REACT_APP_SPOTIFY_CLIENT_ID=$REACT_APP_SPOTIFY_CLIENT_ID" >> .env
-            echo "spotify_client_id=$spotify_client_id" >> .env
-            echo "spotify_client_secret=$spotify_client_secret" >> .env
-            echo "project_id=$project_id" >> .env
-            echo "database_id=$database_id" >> .env
-            echo "location_id=$location_id" >> .env
-            echo "job_name=$job_name" >> .env
-            echo "user_name=$user_name" >> .env
-            echo "redirect_uri=$redirect_uri" >> .env
+            echo "spotify_client_id=$SPOTIFY_CLIENT_ID" >> .env
+            echo "spotify_client_secret=$SPOTIFY_CLIENT_SECRET" >> .env
+            echo "project_id=$PROJECT_ID" >> .env
+            echo "database_id=$DATABASE_ID" >> .env
+            echo "location_id=$LOCATION_ID" >> .env
+            echo "job_name=$JOB_NAME" >> .env
+            echo "user_name=$USER_NAME" >> .env
+            echo "redirect_uri=$REACT_APP_REDIRECT_URI" >> .env
       - run:
           name: Set Firebase Config
           command: yarn set-config
