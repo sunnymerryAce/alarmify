@@ -1,8 +1,8 @@
 import { RequestInit } from 'node-fetch';
 import CONFIG from '@/util/CONFIG';
-import updateUser from './updateUser';
 import createURLSearchParams from '@/util/functions/createURLSearchParams';
 import fetchWithErrorHandling from '@/util/functions/fetchWithErrorHandling';
+import updateUser from './updateUser';
 
 interface GetSpotifyAccessTokenParam {
   isRefresh: boolean;
@@ -30,11 +30,13 @@ const getSpotifyAccessToken = async (
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: `Basic ${base64}`,
     },
-    body: createURLSearchParams({
-      grant_type: isRefresh ? 'refresh_token' : 'authorization_code',
-      code: isRefresh ? '' : code,
-      redirect_uri: isRefresh ? '' : CONFIG.REDIRECT_URI,
-      refresh_token: isRefresh && refresh_token ? refresh_token : '',
+    body: isRefresh ? createURLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token,
+    }) : createURLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: CONFIG.REDIRECT_URI,
     }),
   };
 
