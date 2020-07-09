@@ -39,7 +39,7 @@ jobs:
             echo "location_id=$LOCATION_ID" >> .env
             echo "job_name=$JOB_NAME" >> .env
             echo "user_name=$USER_NAME" >> .env
-            echo "redirect_uri=$REACT_APP_REDIRECT_URI" >> .env
+            echo "redirect_uri=$REDIRECT_URI" >> .env
       - run:
           name: Set Firebase Config
           command: yarn set-config
