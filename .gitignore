@@ -31,3 +31,4 @@ yarn-error.log*
 FIREBASE_CONFIG.js
 .firebaserc
 firebase-debug.log*
+.node-version
