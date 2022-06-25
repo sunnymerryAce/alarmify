@@ -26,7 +26,7 @@
     "firebase-functions-test": "^0.1.7",
     "googleapis": "^46.0.0",
     "jest": "^24.9.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "ts-jest": "^24.2.0",
     "webpack": "^4.42.1",
     "webpack-node-externals": "^1.7.2"
